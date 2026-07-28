@@ -24,7 +24,7 @@ flowchart LR
 
 ### 使用步骤
 
-1. （手动）更新 `code-review/SKILL.md` frontmatter 的 `version`（如 `version: 1.2.0`），并同步更新 `README.md` 的版本表格。
+1. （手动）更新 `code-review/SKILL.md` frontmatter 的 `version`（如 `version: 1.2.0`）。脚本会自动读取该版本号生成 tag；若 `README.md` 技能列表表格中的版本号与之不一致，脚本仅会打印警告提示（不会自动修改），建议保持一致但非强制。
 2. 执行：
 
    ```bash
@@ -83,9 +83,21 @@ secrets:
 
 另外，CLI 的发布决策基于**内容指纹**而非 `SKILL.md` 里的 `version` 字段。需要注意：CLI 输出中的 `version` 字段是**自动递增的下一个 patch 版本**（如 `1.1.1` → `1.1.2`），并非 `SKILL.md` 中实际声明的版本。因此，如果 `SKILL.md` 中声明的版本号与 ClawHub 上最新版本不一致但指纹相同，工作流会自动读取 `SKILL.md` 的 `version` 并追加 `--version <skill_md_version>` 参数强制发布，确保版本号变更也能触发 ClawHub 更新。
 
-强制发布首次返回 `pending-publication` 时，不再轮询，直接归入 `pendingPublication` 并标记 `_pendingReview: true`，表示版本已提交、等待 ClawHub 自动安全校验完成。校验期间网站可能仍显示旧版本，属于正常现象。
+强制发布首次返回 `pending-publication` 时，不再轮询，直接归入 `pendingPublication` 并标记 `_pendingReview: true`，表示版本已提交、等待 ClawHub 自动安全校验完成。校验与页面刷新存在延迟属正常现象，详见下方 **Q5**。
 
 因此**更新已有技能可以自动对应**，前提是 `owner`（`@tinycen`）和技能 slug 与 ClawHub 上已有的一致。`release-clawhub.yml` 中已配置：
+
+### Q5：提交后网站为何仍显示旧版本？是不是发布失败了？
+
+**不是失败，这是 ClawHub 平台的正常现象。** 工作流输出 `pending-publication`（或 `published`）仅表示"发布请求已成功提交到 ClawHub"，并不代表页面已立即刷新。实际观察表明：
+
+- **页面可见延迟约 1~3 小时**：即使 `Versions` 记录里已经能看到新版本（如 `1.2.0`），ClawHub 网站对外展示的 "Current version" 仍可能显示旧版本，直到平台完成后续处理。
+- **Release 标签会经历 `auto` → `Latest` 的过程**：新版本的 Release 标签最初显示为 `auto`（表示自动化发布、待校验/转正），稳定后才会被平台标记为 `Latest`，页面随之更新。
+- **changelog 由平台 AI 自动生成**：ClawHub 会排队对提交做后台处理（含 AI 自动生成修改记录/changelog），这也是需要等待的原因之一。**上线后才会生成并展示修改记录**，无需（也无法）在发布时手动填写——发布时显示 "No changelog provided" 是正常的中间态。
+
+> 结论：只要 `skill publish` 返回 `pending-publication` / `published` 且工作流未报错（`failed`），即可认为发布已成功提交。无需因为页面暂未更新而重复发布或回滚。耐心等待 1~3 小时后刷新页面即可看到新版本；若超过该时长仍未更新，再排查平台侧问题（可参考 [ClawHub issue #3288](https://github.com/openclaw/clawhub/issues/3288) 这类 scan/indexing 卡住的情况）。
+
+
 
 ```yaml
 with:
