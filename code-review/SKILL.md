@@ -1,6 +1,6 @@
 ---
 name: code-review
-description: 代码审查 Skill - 自动化代码质量检查与报告生成工具。支持从 GitHub 仓库克隆代码、执行多维度代码质量检查、生成结构化审查报告并按场景保存与分发。当用户提到"代码审查"、"code review"、"检查代码质量"、"审查报告"等操作时，或 当用户主动提及使用本 skill / 调用本技能 时，请使用本 skill。
+description: 代码审查 Skill - 自动化代码质量检查与报告生成工具。支持从 GitHub 等仓库克隆代码、执行多维度代码质量检查、生成结构化审查报告并按场景保存与分发。当用户提到"代码审查"、"code review"、"检查代码质量"、"审查报告"等操作时，或 当用户主动提及使用本 skill / 调用本技能 时，请使用本 skill。
 version: 1.2.0
 author: code-review
 ---
