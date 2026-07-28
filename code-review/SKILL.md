@@ -30,8 +30,10 @@ code-review/
 │   ├── review_process.md           # 代码审查流程与规则
 │   ├── report_template.md          # 审查报告模板
 │   ├── repository_access.md        # 仓库获取规范
-│   ├── installation.md             # 安装与更新
-│   └── dependency_installation.md  # 代码审查依赖安装指南
+│   ├── installation.md                          # 安装与更新
+│   └── python_dependency_installation/          # Python 依赖安装
+│       ├── review_tools.md                      # 审查工具依赖安装
+│       └── project_dependencies.md              # 项目业务依赖安装
 ```
 
 **报告输出目录结构**（在项目 `docs/code_reviews/` 下自动生成）：
@@ -268,16 +270,17 @@ docs/code_reviews/
 | 已忽略问题清单不存在 | 首次审查时 `ignored_issues.md` 可能不存在，属于正常情况，工具会自动创建 |
 | 已忽略问题仍在报告中出现 | 1. 检查 `ignored_issues.md` 中对应条目的「文件路径」和「问题标题」是否与新报告中的问题完全一致；2. 确认用户是否使用了标准忽略标记（如 `（忽略）` / `(ignore)` 等）；3. 若用户手动编辑了清单，检查格式是否正确（应为 Markdown 表格行）；4. 如需恢复跟踪，从清单中删除对应条目即可 |
 | 误报忽略（不想忽略却被记录） | 1. 打开 `ignored_issues.md` 手动删除对应条目；2. 下次审查将恢复跟踪该问题；3. 若频繁误报，检查忽略标记识别规则是否过于宽泛 |
-| Pyright / Pyrefly / pyupgrade / Ruff 等工具未安装 | 统一参考 [references/dependency_installation.md](references/dependency_installation.md)。执行前应先检测环境（uv / Conda / pip / pipx）和已安装版本，优先升级 |
-| Pyright 安装失败 | 按 [dependency_installation.md > Pyright](references/dependency_installation.md#pyright) 的 fallback 链执行，全部失败后注明「Pyright 安装失败，未执行类型检查」 |
-| Pyrefly 安装失败 | 按 [dependency_installation.md > Pyrefly](references/dependency_installation.md#pyrefly) 的 fallback 链执行，全部失败后注明「Pyrefly 安装失败，未执行交叉验证检查」，不影响 Pyright 主检查 |
+| Pyright / Pyrefly / pyupgrade / Ruff 等工具未安装 | 统一参考 [references/python_dependency_installation/review_tools.md](references/python_dependency_installation/review_tools.md)。执行前应先检测环境（uv / Conda / pip / pipx）和已安装版本，优先升级 |
+| Pyright 安装失败 | 按 [review_tools.md > Pyright](references/python_dependency_installation/review_tools.md#pyright) 的 fallback 链执行，全部失败后注明「Pyright 安装失败，未执行类型检查」 |
+| Pyrefly 安装失败 | 按 [review_tools.md > Pyrefly](references/python_dependency_installation/review_tools.md#pyrefly) 的 fallback 链执行，全部失败后注明「Pyrefly 安装失败，未执行交叉验证检查」，不影响 Pyright 主检查 |
 | Pyright 检查报错（内存/超时） | 1. 尝试增加 Node 内存限制：`NODE_OPTIONS="--max-old-space-size=4096" pyright`；2. 检查是否存在循环导入或超大文件导致分析超时；3. 若仍失败，跳过类型检查维度 |
 | Pyrefly 检查报错（内存/超时） | 1. 检查是否存在循环导入、超大文件或复杂类型推导导致分析超时；2. 尝试限制分析范围或排除大型生成文件；3. 若仍失败，跳过 Pyrefly 交叉验证维度 |
-| Pyright 版本不兼容 | 检查项目 `pyrightconfig.json` 或 `pyproject.toml` 中 Python 版本配置，并按 [dependency_installation.md](references/dependency_installation.md) 升级 |
-| pyupgrade 安装失败 | 按 [dependency_installation.md > pyupgrade](references/dependency_installation.md#pyupgrade) 的 fallback 链执行，全部失败后注明「pyupgrade 检查未执行」 |
-| Ruff 安装失败 | 优先使用项目已配置的 `ruff check`；否则按 [dependency_installation.md > Ruff](references/dependency_installation.md#ruff) 的 fallback 链执行，全部失败后注明「Ruff 弃用检查未执行」 |
+| Pyright 版本不兼容 | 检查项目 `pyrightconfig.json` 或 `pyproject.toml` 中 Python 版本配置，并按 [review_tools.md](references/python_dependency_installation/review_tools.md) 升级 |
+| pyupgrade 安装失败 | 按 [review_tools.md > pyupgrade](references/python_dependency_installation/review_tools.md#pyupgrade) 的 fallback 链执行，全部失败后注明「pyupgrade 检查未执行」 |
+| Ruff 安装失败 | 优先使用项目已配置的 `ruff check`；否则按 [review_tools.md > Ruff](references/python_dependency_installation/review_tools.md#ruff) 的 fallback 链执行，全部失败后注明「Ruff 弃用检查未执行」 |
 
 ## 安装与更新
 
 Skill 的安装说明与更新步骤，详见 [references/installation.md](references/installation.md)。
-审查执行过程中所需工具依赖（Pyright、Pyrefly、pyupgrade、Ruff 等）的环境检测、安装与升级说明，详见 [references/dependency_installation.md](references/dependency_installation.md)。
+审查执行过程中所需工具依赖（Pyright、Pyrefly、pyupgrade、Ruff 等）的环境检测、安装与升级说明，详见 [references/python_dependency_installation/review_tools.md](references/python_dependency_installation/review_tools.md)。
+被审查项目业务依赖的安装策略，详见 [references/python_dependency_installation/project_dependencies.md](references/python_dependency_installation/project_dependencies.md)。

@@ -20,67 +20,14 @@
 - **检查项**：返回类型注解是否与实际返回值一致
 - **检查项**：不同参数分支是否可能导致返回不同的数据类型，若是，建议通过 `@overload` 等方式显式声明，便于 IDE 与类型检查器识别
 
-## 项目依赖安装策略（按场景）
+## 项目依赖安装策略
 
-> 本节说明审查前是否安装项目的**业务依赖**（如 `requirements.txt`、`pyproject.toml` 中声明的依赖）。
+> 审查前是否安装被审查项目的业务依赖，按本地审查场景与远程 Claw 场景分别处理，详见 [python_dependency_installation/project_dependencies.md](../python_dependency_installation/project_dependencies.md)。
 > 注意：这与下文"Pyright / Pyrefly 安装"是两类不同的依赖，请勿混淆。
-
-### 本地审查场景
-
-- **不安装、不更新项目依赖**，以用户当前本地环境为准，避免破坏用户本地开发环境。
-- **审查工具自动安装**：若本地未安装 Pyright / Pyrefly / pyupgrade / Ruff，按 `dependency_installation.md` 的 fallback 链自动安装；若已安装，每次审查前升级到最新版本。
-- 直接使用本地环境中的 Pyright / Pyrefly 执行检查。
-- 若用户本地环境未安装某项目依赖，Pyright / Pyrefly 可能报告 `reportMissingTypeStubs` 或导入错误，按本文件分级标准处理。
-
-### 远程 Claw 场景
-
-- **在远程代码拉取（同步）完成后**，在项目 `.venv` 中安装/更新项目依赖，使 Pyright / Pyrefly 能准确解析第三方库类型。
-- 同时在该 `.venv` 中安装/升级 Pyright / Pyrefly / pyupgrade / Ruff，确保工具能访问同一套 `site-packages`。
-
-#### 依赖安装/更新命令
-
-根据项目实际使用的包管理器和依赖声明文件选择命令：
-
-| 项目依赖声明 | pip | uv | conda |
-|---|---|---|---|
-| lock 文件（`uv.lock`） | - | `uv pip sync uv.lock` | - |
-| lock 文件（`poetry.lock`） | - | -（使用 poetry） | - |
-| lock 文件（`Pipfile.lock`） | - | -（使用 pipenv） | - |
-| `pyproject.toml` / `setup.py` 包项目 | `pip install --upgrade -e .` | `uv pip install --upgrade -e .` | `conda env update -f environment.yml`（若存在）或 `conda install --file requirements.txt` |
-| `requirements.txt` | `pip install --upgrade -r requirements.txt` | `uv pip install --upgrade -r requirements.txt` | `conda install --file requirements.txt` |
-| `environment.yml` | - | - | `conda env update -f environment.yml` |
-
-> **说明**：poetry / pipenv 项目按各自命令执行：`poetry install --sync --no-interaction`、`pipenv sync --dev`。
-
-#### 版本策略
-
-按项目声明的依赖约束进行安装和更新，允许在约束范围内选择最新可用版本。升级到新版本有助于提前发现潜在兼容性问题。
-
-#### `.gitignore` 检查与自动修复
-
-- 检查 `.gitignore` 是否已排除 `.venv/`、`venv/`、`env/` 等虚拟环境目录。
-- 若未排除 `.venv/`，自动追加 `.venv/` 到 `.gitignore`。
-- 在远程 Claw 场景下，将该 `.gitignore` 修改提交并推送到远程仓库，提交信息固定为：
-  ```bash
-  git add .gitignore
-  git commit -m "chore: ignore .venv for code review"
-  git push
-  ```
-- 推送失败时记录原因，不阻塞后续审查流程。
-
-#### 失败处理
-
-- 依赖安装/更新失败时，降级为不安装依赖直接执行检查，并在报告中注明。
-
-### 环境隔离要求
-
-- 禁止在审查工具依赖与项目依赖之间混用系统环境。
-- 本地场景不修改用户项目目录。
-- 远程 Claw 场景下项目目录为临时工作区，可在项目 `.venv` 中操作。
 
 ## Pyright 安装与执行
 
-Pyright 的环境检测、安装、升级与执行命令详见 [dependency_installation.md > Pyright](../dependency_installation.md#pyright)。
+Pyright 的环境检测、安装、升级与执行命令详见 [review_tools.md > Pyright](../python_dependency_installation/review_tools.md#pyright)。
 
 - ⚠️ **强制四步 fallback 链**：必须按以下顺序执行，每步失败才进入下一步，禁止在任何中间步骤直接跳过类型检查：
   1. 使用检测到的 Python 包管理器（uv / Conda / pip / pipx）安装/升级 Pyright → 成功后使用 `python -m pyright --outputjson` 执行
@@ -91,7 +38,7 @@ Pyright 的环境检测、安装、升级与执行命令详见 [dependency_insta
 
 ## Pyrefly 安装与执行
 
-Pyrefly 的环境检测、安装、升级与执行命令详见 [dependency_installation.md > Pyrefly](../dependency_installation.md#pyrefly)。
+Pyrefly 的环境检测、安装、升级与执行命令详见 [review_tools.md > Pyrefly](../python_dependency_installation/review_tools.md#pyrefly)。
 
 - ⚠️ **强制 fallback 链**：必须按以下顺序执行，每步失败才进入下一步：
   1. 使用检测到的 Python 包管理器（uv / Conda / pip / pipx）安装/升级 Pyrefly → 成功后使用 `python -m pyrefly check --output-format=json` 或 `pyrefly check --output-format=json` 执行
@@ -140,7 +87,7 @@ Pyrefly 的环境检测、安装、升级与执行命令详见 [dependency_insta
 
 ### 过时语法检查（pyupgrade）
 
-使用 `pyupgrade` 检测与目标 Python 版本不兼容的过时语法。pyupgrade 的环境检测、安装、升级与执行命令详见 [dependency_installation.md > pyupgrade](../dependency_installation.md#pyupgrade)。
+使用 `pyupgrade` 检测与目标 Python 版本不兼容的过时语法。pyupgrade 的环境检测、安装、升级与执行命令详见 [review_tools.md > pyupgrade](../python_dependency_installation/review_tools.md#pyupgrade)。
 
 - ⚠️ **强制三步 fallback 链**：必须按以下顺序执行，每步失败才进入下一步：
   1. 使用检测到的 Python 包管理器（uv / Conda / pip / pipx）安装/升级 pyupgrade → 成功后使用 `pyupgrade --py<VERSION>-plus` 执行（如 `pyupgrade --py312-plus`）
@@ -163,7 +110,7 @@ Pyrefly 的环境检测、安装、升级与执行命令详见 [dependency_insta
 
 ### 弃用 API 检查（Ruff）
 
-若项目已配置 Ruff（`pyproject.toml` 中 `[tool.ruff]` 或存在 `ruff.toml`），优先使用项目配置执行检查；否则使用独立安装。Ruff 的环境检测、安装、升级与执行命令详见 [dependency_installation.md > Ruff](../dependency_installation.md#ruff)。
+若项目已配置 Ruff（`pyproject.toml` 中 `[tool.ruff]` 或存在 `ruff.toml`），优先使用项目配置执行检查；否则使用独立安装。Ruff 的环境检测、安装、升级与执行命令详见 [review_tools.md > Ruff](../python_dependency_installation/review_tools.md#ruff)。
 
 - ⚠️ **强制三步 fallback 链**：
   1. 若项目 `pyproject.toml` 或 `tox.ini` 中包含 Ruff 相关配置或脚本，优先使用 `ruff check` 执行

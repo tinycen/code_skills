@@ -98,12 +98,14 @@ code_skills/
         ├── report_template.md          # 审查报告模板
         ├── ignored_issues_template.md  # 已忽略问题清单模板
         ├── repository_access.md        # 仓库获取规范
-        ├── installation.md             # 安装与更新
-        ├── dependency_installation.md  # 依赖安装指南
-        └── language_checks/            # 语言专项检查
-            ├── python_type_check.md    # Python 类型检查
-            ├── python_dependency.md    # Python 依赖检查
-            └── typescript_javascript_check.md  # TypeScript/JavaScript 检查
+        ├── installation.md                          # 安装与更新
+        ├── python_dependency_installation/          # Python 依赖安装
+        │   ├── review_tools.md                      # 审查工具依赖安装
+        │   └── project_dependencies.md              # 项目业务依赖安装
+        └── language_checks/                         # 语言专项检查
+            ├── python_type_check.md                 # Python 类型检查
+            ├── python_pypi_packaging.md             # Python PyPI 包依赖与打包
+            └── typescript_javascript_check.md       # TypeScript/JavaScript 检查
 ```
 
 ## 报告输出结构/生命周期

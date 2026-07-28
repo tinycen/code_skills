@@ -1,10 +1,14 @@
 # Python 项目审查依赖安装重构方案
 
-> 本方案供确认后执行。确认后将对以下文件进行实际修改：
-> - `code-review/references/language_checks/python_dependency.md` → 重命名为 `python_pypi_packaging.md`
+> **状态：已执行，并进一步重构为 `python_dependency_installation/` 目录。**
+> 原始方案涉及以下文件：
+> - `code-review/references/language_checks/python_dependency.md` → 已重命名为 `python_pypi_packaging.md`
 > - `code-review/references/review_process.md`
 > - `code-review/references/language_checks/python_type_check.md`
-> - `code-review/references/dependency_installation.md`
+> - `code-review/references/python_dependency_installation/review_tools.md`（原 `dependency_installation.md`） → 已迁移至 `code-review/references/python_dependency_installation/review_tools.md`
+>
+> 新增文件：
+> - `code-review/references/python_dependency_installation/project_dependencies.md`（从 `python_type_check.md` 提取的项目业务依赖安装策略）
 
 ---
 
@@ -99,7 +103,7 @@
 
 ---
 
-## 四、`dependency_installation.md` 修改
+## 四、审查工具依赖文档修改（原 `dependency_installation.md`，现为 `python_dependency_installation/review_tools.md`）
 
 ### 1. 重写第 5 行「重要区分」
 
@@ -174,12 +178,13 @@
 
 ## 七、确认后执行的操作清单
 
-- [ ] 重命名 `code-review/references/language_checks/python_dependency.md` → `python_pypi_packaging.md`
-- [ ] 更新 `code-review/references/review_process.md` 中的引用
-- [ ] 在 `code-review/references/language_checks/python_type_check.md` 中新增「项目依赖安装策略（按场景）」章节
-- [ ] 修改 `code-review/references/dependency_installation.md` 开头的「重要区分」说明
-- [ ] 在 `code-review/references/dependency_installation.md` 中补充每次审查前升级审查工具的说明
-- [ ] （可选）在 `code-review/SKILL.md` 目录结构中补充 `language_checks/` 子文件说明
+- [x] 重命名 `code-review/references/language_checks/python_dependency.md` → `python_pypi_packaging.md`
+- [x] 更新 `code-review/references/review_process.md` 中的引用
+- [x] 将 `python_type_check.md` 中「项目依赖安装策略（按场景）」章节提取为独立文件 `python_dependency_installation/project_dependencies.md`
+- [x] 创建 `code-review/references/python_dependency_installation/` 目录，统一存放 `review_tools.md` 与 `project_dependencies.md`
+- [x] 修改 `python_dependency_installation/review_tools.md` 开头的「重要区分」说明
+- [x] 在 `python_dependency_installation/review_tools.md` 中补充每次审查前升级审查工具的说明
+- [x] 更新 `README.md`、`SKILL.md` 中的目录结构与引用
 
 ---
 

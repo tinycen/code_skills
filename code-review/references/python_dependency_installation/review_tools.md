@@ -1,10 +1,10 @@
-# 代码审查依赖安装指南
+# 审查工具依赖安装指南
 
 > 本文档统一说明代码审查 Skill 执行过程中所需工具依赖（Pyright、Pyrefly、pyupgrade、Ruff）的环境检测、安装、升级与执行方式。
 >
 > **重要区分**：
 > - **审查工具依赖**：本文档所述的 Pyright、Pyrefly、pyupgrade、Ruff 等，仅服务于代码审查流程。
-> - **项目业务依赖**：被审查项目自身运行所需的依赖（如 `requirements.txt`、`pyproject.toml` 中声明的依赖），其安装策略见 [python_type_check.md > 项目依赖安装策略](language_checks/python_type_check.md#项目依赖安装策略)。
+> - **项目业务依赖**：被审查项目自身运行所需的依赖（如 `requirements.txt`、`pyproject.toml` 中声明的依赖），其安装策略见 [project_dependencies.md](project_dependencies.md)。
 >
 > **安装位置**：
 > - **本地审查场景**：审查工具依赖应安装在独立的审查环境、临时虚拟环境或用户隔离的工具环境中，**不修改被审查项目本身**，也不安装项目业务依赖。
@@ -87,7 +87,7 @@
   1. `pipx install pyupgrade`
   2. 若全部失败，在报告中注明「pyupgrade 检查未执行（原因：安装失败）」并跳过该子项
 
-其中 `<VERSION>` 取项目目标 Python 版本的最高支持版本或最高测试版本（详见 [python_type_check.md > 目标 Python 版本识别](python_type_check.md#目标-python-版本识别)）。
+其中 `<VERSION>` 取项目目标 Python 版本的最高支持版本或最高测试版本（详见 [python_type_check.md > 目标 Python 版本识别](../language_checks/python_type_check.md#目标-python-版本识别)）。
 
 ---
 
