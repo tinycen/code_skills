@@ -53,6 +53,16 @@ on:
         required: false
         type: string
         default: "main"
+      pending_poll_seconds:
+        description: Seconds to wait between polls when the publish status is pending-publication.
+        required: false
+        type: number
+        default: 5
+      pending_poll_retries:
+        description: Maximum number of extra polls when the publish status is pending-publication.
+        required: false
+        type: number
+        default: 3
     secrets:
       clawhub_token:
         required: false
@@ -139,6 +149,8 @@ jobs:
           INPUT_SITE: ${{ inputs.site }}
           INPUT_REGISTRY: ${{ inputs.registry }}
           INPUT_REF: ${{ inputs.ref }}
+          PENDING_POLL_SECONDS: ${{ inputs.pending_poll_seconds }}
+          PENDING_POLL_RETRIES: ${{ inputs.pending_poll_retries }}
           SOURCE_REPOSITORY: ${{ github.repository }}
           SOURCE_REF: ${{ github.ref }}
         run: |
@@ -147,6 +159,7 @@ jobs:
           import os
           import subprocess
           import sys
+          import time
           from pathlib import Path
 
           workspace = Path(os.environ["GITHUB_WORKSPACE"]).resolve()
@@ -195,12 +208,36 @@ jobs:
           owner = os.environ["INPUT_OWNER"].strip()
           tags = os.environ["INPUT_TAGS"].strip()
 
-          results = {"wouldPublish": [], "published": [], "alreadySynced": [], "skipped": [], "failed": []}
+          pending_poll_seconds = max(0, int(os.environ.get("PENDING_POLL_SECONDS", "5")))
+          pending_poll_retries = max(0, int(os.environ.get("PENDING_POLL_RETRIES", "3")))
+
+          results = {"wouldPublish": [], "published": [], "alreadySynced": [], "skipped": [], "pendingPublication": [], "failed": []}
           status_keys = {
               "would-publish": "wouldPublish",
               "published": "published",
               "unchanged": "alreadySynced",
+              "pending-publication": "pendingPublication",
           }
+
+          def publish_with_poll(command, slug, folder, max_retries, poll_seconds):
+              for attempt in range(max_retries + 1):
+                  completed = subprocess.run(command, cwd=workspace, capture_output=True, text=True)
+                  if completed.returncode != 0:
+                      message = completed.stderr.strip() or completed.stdout.strip() or f"exit {completed.returncode}"
+                      return {"ok": False, "slug": slug, "folder": folder, "message": message}
+
+                  try:
+                      result = json.loads(completed.stdout)
+                      status = result["status"]
+                  except (KeyError, ValueError, json.JSONDecodeError) as exc:
+                      return {"ok": False, "slug": slug, "folder": folder, "message": f"Invalid publish output: {exc}"}
+
+                  if status != "pending-publication" or attempt == max_retries:
+                      result["_pollAttempts"] = attempt
+                      return {"ok": True, "status": status, "result": result}
+
+                  print(f"Status for {slug} is pending-publication, waiting {poll_seconds}s before retry {attempt + 1}/{max_retries}...")
+                  time.sleep(poll_seconds)
 
           for target in targets:
               relative_path = target.relative_to(workspace).as_posix()
@@ -224,16 +261,11 @@ jobs:
               if source_ref:
                   command += ["--source-ref", source_ref]
 
-              completed = subprocess.run(command, cwd=workspace, capture_output=True, text=True)
-              if completed.returncode != 0:
-                  message = completed.stderr.strip() or completed.stdout.strip() or f"exit {completed.returncode}"
-                  results["failed"].append({"slug": target.name, "folder": relative_path, "message": message})
-                  continue
-              try:
-                  result = json.loads(completed.stdout)
-                  results[status_keys[result["status"]]].append(result)
-              except (KeyError, ValueError, json.JSONDecodeError) as exc:
-                  results["failed"].append({"slug": target.name, "folder": relative_path, "message": f"Invalid publish output: {exc}"})
+              outcome = publish_with_poll(command, target.name, relative_path, pending_poll_retries, pending_poll_seconds)
+              if not outcome["ok"]:
+                  results["failed"].append({"slug": outcome["slug"], "folder": outcome["folder"], "message": outcome["message"]})
+              else:
+                  results[status_keys[outcome["status"]]].append(outcome["result"])
 
           output = {
               "ok": not results["failed"],

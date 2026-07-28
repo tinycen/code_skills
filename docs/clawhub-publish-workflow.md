@@ -76,6 +76,7 @@ secrets:
 |------|------|
 | `would-publish` | dry-run 预览，将会发布 |
 | `published` | 有变更，已发布新版本 |
+| `pending-publication` | 已提交成功，但处于待审核/待发布状态 |
 | `unchanged` | 内容无变化，跳过（alreadySynced） |
 
 因此**更新已有技能可以自动对应**，前提是 `owner`（`@tinycen`）和技能 slug 与 ClawHub 上已有的一致。`release-clawhub.yml` 中已配置：
