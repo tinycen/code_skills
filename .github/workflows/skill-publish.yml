@@ -219,6 +219,16 @@ jobs:
               "pending-publication": "pendingPublication",
           }
 
+          def read_skill_version(skill_dir):
+              for name in ("SKILL.md", "skill.md"):
+                  path = skill_dir / name
+                  if not path.is_file():
+                      continue
+                  for line in path.read_text(encoding="utf-8").splitlines():
+                      if line.startswith("version:"):
+                          return line.split(":", 1)[1].strip()
+              return None
+
           def publish_with_poll(command, slug, folder, max_retries, poll_seconds):
               for attempt in range(max_retries + 1):
                   completed = subprocess.run(command, cwd=workspace, capture_output=True, text=True)
@@ -269,14 +279,21 @@ jobs:
               status = outcome["status"]
               result = outcome["result"]
               if status == "unchanged":
-                  local_version = result.get("version")
+                  local_version = read_skill_version(target)
                   remote_version = result.get("latestVersion")
                   if local_version and remote_version and local_version != remote_version:
-                      print(f"Version changed ({remote_version} -> {local_version}) but fingerprint unchanged; forcing publish with explicit --version...")
+                      print(f"SKILL.md version ({remote_version} -> {local_version}) differs from ClawHub but fingerprint unchanged; forcing publish with explicit --version...")
                       forced_command = command + ["--version", local_version]
                       outcome = publish_with_poll(forced_command, target.name, relative_path, pending_poll_retries, pending_poll_seconds)
                       if not outcome["ok"]:
-                          results["failed"].append({"slug": outcome["slug"], "folder": outcome["folder"], "message": outcome["message"]})
+                          message = outcome["message"]
+                          if "already exists" in message.lower():
+                              print(f"Version {local_version} already exists on ClawHub; treating as unchanged.")
+                              result["_versionAlreadyExists"] = True
+                              result["_alreadyExistsMessage"] = message
+                              results["alreadySynced"].append(result)
+                          else:
+                              results["failed"].append({"slug": outcome["slug"], "folder": outcome["folder"], "message": message})
                           continue
                       status = outcome["status"]
                       result = outcome["result"]

@@ -81,7 +81,7 @@ secrets:
 
 当返回 `pending-publication` 时，工作流会等待 `pending_poll_seconds` 秒（默认 5 秒）后重新执行 `skill publish`，最多重试 `pending_poll_retries` 次（默认 3 次）。如果在重试次数内状态变为 `published` 或 `unchanged`，则按最终状态归类；如果仍为 `pending-publication`，则归入 `pendingPublication`，工作流不会因此失败。
 
-另外，CLI 的发布决策基于**内容指纹**而非 `SKILL.md` 里的 `version` 字段。如果本地版本号已提升（如 `1.1.1` → `1.1.2`）但指纹与 ClawHub 上最新版本一致，工作流会自动追加 `--version <local_version>` 参数强制发布，确保版本号变更也能触发 ClawHub 更新。
+另外，CLI 的发布决策基于**内容指纹**而非 `SKILL.md` 里的 `version` 字段。需要注意：CLI 输出中的 `version` 字段是**自动递增的下一个 patch 版本**（如 `1.1.1` → `1.1.2`），并非 `SKILL.md` 中实际声明的版本。因此，如果 `SKILL.md` 中声明的版本号与 ClawHub 上最新版本不一致但指纹相同，工作流会自动读取 `SKILL.md` 的 `version` 并追加 `--version <skill_md_version>` 参数强制发布，确保版本号变更也能触发 ClawHub 更新。
 
 因此**更新已有技能可以自动对应**，前提是 `owner`（`@tinycen`）和技能 slug 与 ClawHub 上已有的一致。`release-clawhub.yml` 中已配置：
 
