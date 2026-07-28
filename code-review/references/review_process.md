@@ -205,7 +205,7 @@
 
 ### 5. 依赖管理检查（PyPI 项目）
 
-> 详见 [language_checks/python_dependency.md](language_checks/python_dependency.md)
+> 详见 [language_checks/python_pypi_packaging.md](language_checks/python_pypi_packaging.md)
 
 ### 6. 类型与弃用检查（Python 项目）
 
