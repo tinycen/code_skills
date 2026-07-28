@@ -9,29 +9,29 @@
 |------|------|------|
 | `.github/workflows/skill-publish.yml` | 新增/修改 | ClawHub 技能发布**可复用工作流**（`workflow_call`），参考 `references/skill-publish.yml`，但改为通过输入参数显式指定 ClawHub CLI 来源仓库 |
 | `.github/workflows/release-clawhub.yml` | 新增 | **tag 触发工作流**，推送 `v*` 标签时调用上面的可复用工作流 |
-| `create_tag.sh` | 重写 | 适配本项目：版本号硬编码在脚本 `TAG_NAME` 变量中，创建并推送 tag |
+| `create_tag.sh` | 重写 | 自动从 `code-review/SKILL.md` 读取 `version` 并生成 `v{VERSION}` tag，创建并推送 tag |
 
 ## 二、发布流程
 
 ```mermaid
 flowchart LR
-    A[更新 create_tag.sh 中的 TAG_NAME] --> B[bash create_tag.sh]
-    B --> C[创建并推送 v{VERSION} 标签]
-    C --> D[触发 Release to ClawHub 工作流]
+    A[更新 code-review/SKILL.md 中的 version] --> B[bash create_tag.sh]
+    B --> C[读取 version 并创建 v{VERSION} 标签]
+    C --> D[推送 tag 触发 Release to ClawHub]
     D --> E[调用 skill-publish.yml]
     E --> F[发布 code-review 到 ClawHub]
 ```
 
 ### 使用步骤
 
-1. （手动）更新 `create_tag.sh` 中的 `TAG_NAME` 变量（如 `TAG_NAME="v1.2.0"`），同时（手动）更新 `SKILL.md` frontmatter 的 `version` 与 `README.md` 的版本表格。
+1. （手动）更新 `code-review/SKILL.md` frontmatter 的 `version`（如 `version: 1.2.0`），并同步更新 `README.md` 的版本表格。
 2. 执行：
 
    ```bash
    bash create_tag.sh
    ```
 
-3. 脚本会校验 `SKILL.md` 是否存在、tag 在本地/远程是否重复，然后创建并推送 `v{VERSION}` 标签。
+3. 脚本会自动从 `SKILL.md` 读取 `version`、生成 `v{VERSION}` tag，校验 tag 在本地/远程是否重复，然后创建并推送标签。
 4. GitHub Actions 自动运行 `Release to ClawHub` 工作流，将技能发布到 ClawHub。
 
 ### 使用前准备
@@ -80,6 +80,8 @@ secrets:
 | `unchanged` | 内容无变化，跳过（alreadySynced） |
 
 当返回 `pending-publication` 时，工作流会等待 `pending_poll_seconds` 秒（默认 5 秒）后重新执行 `skill publish`，最多重试 `pending_poll_retries` 次（默认 3 次）。如果在重试次数内状态变为 `published` 或 `unchanged`，则按最终状态归类；如果仍为 `pending-publication`，则归入 `pendingPublication`，工作流不会因此失败。
+
+另外，CLI 的发布决策基于**内容指纹**而非 `SKILL.md` 里的 `version` 字段。如果本地版本号已提升（如 `1.1.1` → `1.1.2`）但指纹与 ClawHub 上最新版本一致，工作流会自动追加 `--version <local_version>` 参数强制发布，确保版本号变更也能触发 ClawHub 更新。
 
 因此**更新已有技能可以自动对应**，前提是 `owner`（`@tinycen`）和技能 slug 与 ClawHub 上已有的一致。`release-clawhub.yml` 中已配置：
 
@@ -162,13 +164,14 @@ jobs:
 
 ### `create_tag.sh` 关键逻辑
 
-1. 版本号硬编码在脚本中的 `TAG_NAME` 变量（如 `TAG_NAME="v1.2.0"`），每次发版前手动修改。
+1. 自动从 `code-review/SKILL.md` 解析 `version` 字段，生成 `v{VERSION}` 形式的 tag。
 2. 前置校验：`SKILL.md` 存在、tag 本地/远程均不重复。
+3. 可选警告：如果 `README.md` 中的版本号与 `SKILL.md` 不一致，会打印警告提示。
 3. 创建本地 tag 并推送到 `origin`，触发 GitHub Actions。
 4. 前后各展示最新 3 个本地/远程 tag 便于确认。
 
 ## 五、注意事项
 
-- 发版前需保持三处版本号一致：`create_tag.sh` 中的 `TAG_NAME`、`code-review/SKILL.md` frontmatter 的 `version`、`README.md` 技能列表表格。
+- 发版前需保持两处版本号一致：`code-review/SKILL.md` frontmatter 的 `version`、`README.md` 技能列表表格。`create_tag.sh` 会自动读取 `SKILL.md` 的 `version` 生成 tag。
 - `dry_run` 默认值为 `true`（可复用工作流中定义），`release-clawhub.yml` 已显式设为 `false` 执行真实发布。
 - 若发布失败，可在 Actions 运行记录中下载 `clawhub-skill-publish-json` artifact 查看结构化错误信息。

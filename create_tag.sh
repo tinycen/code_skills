@@ -7,14 +7,27 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 echo "Project directory: $PROJECT_DIR"
 
-TAG_NAME="v1.2.0"
-
-echo "Tag to create: $TAG_NAME"
-
 # 检查 SKILL.md 是否存在
 if [ ! -f "$SCRIPT_DIR/$PROJECT_DIR/SKILL.md" ]; then
     echo "Error: SKILL.md not found in $PROJECT_DIR"
     exit 1
+fi
+
+# 从 SKILL.md 读取 version 并生成 tag
+VERSION=$(grep -E '^version:' "$SCRIPT_DIR/$PROJECT_DIR/SKILL.md" | head -n 1 | sed -E 's/^version:[[:space:]]*//' | tr -d '[:space:]')
+if [ -z "$VERSION" ]; then
+    echo "Error: Could not parse version from $PROJECT_DIR/SKILL.md"
+    exit 1
+fi
+
+TAG_NAME="v$VERSION"
+
+echo "Tag to create: $TAG_NAME"
+
+# 可选：提示 README.md 中的版本是否一致
+README_VERSION=$(grep -E "\|\s*\[?$PROJECT_DIR\]?\(" "$SCRIPT_DIR/README.md" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -n 1 || true)
+if [ -n "$README_VERSION" ] && [ "$README_VERSION" != "$VERSION" ]; then
+    echo "Warning: README.md shows version $README_VERSION, but $PROJECT_DIR/SKILL.md has $VERSION"
 fi
 
 # 检查 tag 是否已存在

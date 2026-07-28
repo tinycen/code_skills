@@ -264,8 +264,25 @@ jobs:
               outcome = publish_with_poll(command, target.name, relative_path, pending_poll_retries, pending_poll_seconds)
               if not outcome["ok"]:
                   results["failed"].append({"slug": outcome["slug"], "folder": outcome["folder"], "message": outcome["message"]})
-              else:
-                  results[status_keys[outcome["status"]]].append(outcome["result"])
+                  continue
+
+              status = outcome["status"]
+              result = outcome["result"]
+              if status == "unchanged":
+                  local_version = result.get("version")
+                  remote_version = result.get("latestVersion")
+                  if local_version and remote_version and local_version != remote_version:
+                      print(f"Version changed ({remote_version} -> {local_version}) but fingerprint unchanged; forcing publish with explicit --version...")
+                      forced_command = command + ["--version", local_version]
+                      outcome = publish_with_poll(forced_command, target.name, relative_path, pending_poll_retries, pending_poll_seconds)
+                      if not outcome["ok"]:
+                          results["failed"].append({"slug": outcome["slug"], "folder": outcome["folder"], "message": outcome["message"]})
+                          continue
+                      status = outcome["status"]
+                      result = outcome["result"]
+                      result["_forcedVersionPublish"] = True
+
+              results[status_keys[status]].append(result)
 
           output = {
               "ok": not results["failed"],
