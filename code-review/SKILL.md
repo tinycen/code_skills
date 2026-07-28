@@ -29,11 +29,16 @@ code-review/
 ├── references/                     # 参考文档
 │   ├── review_process.md           # 代码审查流程与规则
 │   ├── report_template.md          # 审查报告模板
+│   ├── ignored_issues_template.md  # 已忽略问题清单模板
 │   ├── repository_access.md        # 仓库获取规范
-│   ├── installation.md                          # 安装与更新
-│   └── python_dependency_installation/          # Python 依赖安装
-│       ├── review_tools.md                      # 审查工具依赖安装
-│       └── project_dependencies.md              # 项目业务依赖安装
+│   ├── installation.md             # 安装与更新
+│   ├── python_dependency_installation/          # Python 依赖安装
+│   │   ├── review_tools.md                      # 审查工具依赖安装
+│   │   └── project_dependencies.md              # 项目业务依赖安装
+│   └── language_checks/                         # 语言专项检查
+│       ├── python_type_check.md                 # Python 类型检查
+│       ├── python_pypi_packaging.md             # Python PyPI 包依赖与打包
+│       └── typescript_javascript_check.md       # TypeScript/JavaScript 检查
 ```
 
 **报告输出目录结构**（在项目 `docs/code_reviews/` 下自动生成）：
@@ -120,11 +125,12 @@ docs/code_reviews/
      - 文件名以 `deprecated_`、`old_`、`legacy_`、`obsolete_`、`archive_`、`bak_` 前缀开头的文件
      - 被过滤内容不进入统计、不进入问题检测、不写入报告；若某维度因过滤无文件可审，直接跳过该维度
   → Python 项目特殊说明：
-     - 若仓库包含 Python 文件，优先执行 Pyright 类型检查作为辅助线索
-     - ⚠️ **强制四步 fallback 链**：详见 `review_process.md > 检查维度 > 类型与弃用检查 > Pyright 安装与执行`，必须按顺序执行，每步失败才进入下一步，禁止在任何中间步骤直接跳过类型检查
-     - 若项目存在配置文件（`setup.py`、`pyproject.toml`、`setup.cfg` 等），还需执行过时语法检查（pyupgrade）和弃用 API 检查（Ruff），详见 `python_type_check.md > 过时与弃用代码检查`
-     - 执行检查时跳过 `.gitignore` 指定的文件和目录
-     - Pyright 的诊断信息仅作为问题线索，必须结合代码上下文阅读分析后，按 review_process.md 的参考映射判断真实问题及级别，禁止机械映射
+    - 若仓库包含 Python 文件，优先执行 Pyright 类型检查作为辅助线索，并自动执行 Pyrefly 进行交叉验证
+    - ⚠️ **强制四步 fallback 链**：详见 `review_process.md > 检查维度 > 类型与弃用检查 > Pyright 安装与执行`（即 `python_type_check.md` 第 28–37 行），必须按顺序执行，每步失败才进入下一步，禁止在任何中间步骤直接跳过类型检查
+    - 若项目存在配置文件（`setup.py`、`pyproject.toml`、`setup.cfg` 等），还需执行过时语法检查（pyupgrade）和弃用 API 检查（Ruff），详见 `python_type_check.md > 过时与弃用代码检查`
+    - 执行检查时跳过 `.gitignore` 指定的文件和目录
+    - Pyright 与 Pyrefly 的诊断信息仅作为问题线索，必须结合代码上下文阅读分析后，按 `python_type_check.md` 的问题分级参考表判断真实问题及级别，禁止机械映射
+
 
 步骤 7：生成审查报告
   → 按照 references/report_template.md 生成 Markdown 格式报告
