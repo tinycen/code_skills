@@ -23,7 +23,7 @@ if git rev-parse "$TAG_NAME" >/dev/null 2>&1; then
     exit 1
 fi
 
-if git ls-remote --tags origin | grep -q "refs/tags/$TAG_NAME"; then
+if git ls-remote --tags github | grep -q "refs/tags/$TAG_NAME"; then
     echo "Error: Tag $TAG_NAME already exists on remote."
     exit 1
 fi
@@ -34,11 +34,11 @@ git tag -l | sort -V | tail -n 3
 
 # 显示创建前 3 个远程标签
 echo "Before create tag, latest 3 remote tags:"
-git ls-remote --tags origin | awk '{print $2}' | sed 's/refs\/tags\///' | sort -V | tail -n 3
+git ls-remote --tags github | awk '{print $2}' | sed 's/refs\/tags\///' | sort -V | tail -n 3
 
 # 创建本地标签并推送到远程
 git tag "$TAG_NAME"
-git push origin "$TAG_NAME"
+git push github "$TAG_NAME"
 
 # 显示创建后 3 个本地标签
 echo "After create tag, latest 3 local tags:"
@@ -46,7 +46,7 @@ git tag -l | sort -V | tail -n 3
 
 # 显示创建后 3 个远程标签
 echo "After create tag, latest 3 remote tags:"
-git ls-remote --tags origin | awk '{print $2}' | sed 's/refs\/tags\///' | sort -V | tail -n 3
+git ls-remote --tags github | awk '{print $2}' | sed 's/refs\/tags\///' | sort -V | tail -n 3
 
 echo "Tag $TAG_NAME created and pushed successfully."
 echo "GitHub Actions workflow 'Release to ClawHub' will be triggered automatically."
