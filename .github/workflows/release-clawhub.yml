@@ -1,0 +1,23 @@
+name: Release to ClawHub
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish-skill:
+    uses: ./.github/workflows/skill-publish.yml
+    with:
+      root: code-review
+      dry_run: false
+      owner: "@tinycen"
+      tags: latest
+      registry: https://clawhub.ai
+      site: https://clawhub.ai
+    secrets:
+      clawhub_token: ${{ secrets.CLAWHUB_TOKEN }}
