@@ -70,14 +70,16 @@ secrets:
 
 本技能已发布至 ClawHub：`https://clawhub.ai/tinycen/skills/code-review`，因此当前场景是**更新已有技能版本**。
 
-`skill-publish.yml` 通过 `owner` + 技能目录名（slug，即 `code-review`）标识 ClawHub 上的技能，并附带 `--source-repo`、`--source-commit`、`--source-path` 等来源信息。CLI 返回三种状态：
+`skill-publish.yml` 通过 `owner` + 技能目录名（slug，即 `code-review`）标识 ClawHub 上的技能，并附带 `--source-repo`、`--source-commit`、`--source-path` 等来源信息。CLI 返回的状态及处理逻辑如下：
 
 | 状态 | 含义 |
 |------|------|
 | `would-publish` | dry-run 预览，将会发布 |
 | `published` | 有变更，已发布新版本 |
-| `pending-publication` | 已提交成功，但处于待审核/待发布状态 |
+| `pending-publication` | 已提交成功，但处于待审核/待发布状态；工作流会自动轮询确认 |
 | `unchanged` | 内容无变化，跳过（alreadySynced） |
+
+当返回 `pending-publication` 时，工作流会等待 `pending_poll_seconds` 秒（默认 5 秒）后重新执行 `skill publish`，最多重试 `pending_poll_retries` 次（默认 3 次）。如果在重试次数内状态变为 `published` 或 `unchanged`，则按最终状态归类；如果仍为 `pending-publication`，则归入 `pendingPublication`，工作流不会因此失败。
 
 因此**更新已有技能可以自动对应**，前提是 `owner`（`@tinycen`）和技能 slug 与 ClawHub 上已有的一致。`release-clawhub.yml` 中已配置：
 
@@ -155,7 +157,8 @@ jobs:
 3. 校验发布模式：非 dry-run 时必须提供 `clawhub_token`。
 4. 写入 ClawHub 配置（registry + token）。
 5. 定位技能目录（含 `SKILL.md` 的目录），逐个执行 `skill publish`。
-6. 输出结构化 JSON 结果（`published` / `unchanged` / `failed` 等）并上传为 artifact。
+6. 若 CLI 返回 `pending-publication`，按 `pending_poll_seconds` / `pending_poll_retries` 轮询等待并重试，直到状态稳定或达到最大重试次数。
+7. 输出结构化 JSON 结果（`published` / `unchanged` / `pendingPublication` / `failed` 等）并上传为 artifact。
 
 ### `create_tag.sh` 关键逻辑
 
