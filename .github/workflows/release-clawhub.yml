@@ -7,7 +7,6 @@ on:
 
 permissions:
   contents: read
-  id-token: write
 
 jobs:
   publish-skill:
@@ -19,5 +18,7 @@ jobs:
       tags: latest
       registry: https://clawhub.ai
       site: https://clawhub.ai
+      clawhub_source_repo: openclaw/clawhub
+      clawhub_source_ref: main
     secrets:
       clawhub_token: ${{ secrets.CLAWHUB_TOKEN }}

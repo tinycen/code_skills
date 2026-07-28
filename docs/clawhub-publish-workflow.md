@@ -7,7 +7,7 @@
 
 | 文件 | 类型 | 说明 |
 |------|------|------|
-| `.github/workflows/skill-publish.yml` | 新增 | ClawHub 技能发布**可复用工作流**（`workflow_call`），来源于 `references/skill-publish.yml` |
+| `.github/workflows/skill-publish.yml` | 新增/修改 | ClawHub 技能发布**可复用工作流**（`workflow_call`），参考 `references/skill-publish.yml`，但改为通过输入参数显式指定 ClawHub CLI 来源仓库 |
 | `.github/workflows/release-clawhub.yml` | 新增 | **tag 触发工作流**，推送 `v*` 标签时调用上面的可复用工作流 |
 | `create_tag.sh` | 重写 | 适配本项目：版本号硬编码在脚本 `TAG_NAME` 变量中，创建并推送 tag |
 
@@ -102,6 +102,20 @@ with:
 
 属于 ClawHub 网站的 Catalog metadata，需要在 **ClawHub 后台页面手动配置并保存**，无法通过 `SKILL.md` 或 workflow 自动填充。
 
+### Q4：为什么 `skill-publish.yml` 不通过 OIDC 自动解析 ClawHub CLI 来源？
+
+原版 `references/skill-publish.yml` 使用 GitHub OIDC 令牌中的 `job_workflow_ref` 来自动定位可复用工作流所在的仓库，再从该仓库 checkout CLI 源码。
+
+但在本项目中，`release-clawhub.yml` 调用的是**本地副本** `./.github/workflows/skill-publish.yml`，OIDC 会错误地把来源解析为当前仓库 `code_skills`，导致 `bun install` 时找不到 `package.json`。
+
+因此本地副本做了以下调整：
+
+- 新增 `clawhub_source_repo` / `clawhub_source_ref` 输入参数（默认 `openclaw/clawhub@main`）。
+- 移除 OIDC 解析步骤和 `id-token: write` 权限。
+- 直接通过输入参数 checkout ClawHub CLI 源码。
+
+这样 `skill-publish.yml` 仍作为本地可复用工作流存在，与 `release-clawhub.yml` 的两层结构保持不变，同时避免了 OIDC 自引用问题。
+
 ## 四、关键文件说明
 
 ### `.github/workflows/release-clawhub.yml`
@@ -116,7 +130,6 @@ on:
 
 permissions:
   contents: read
-  id-token: write
 
 jobs:
   publish-skill:
@@ -128,6 +141,8 @@ jobs:
       tags: latest
       registry: https://clawhub.ai
       site: https://clawhub.ai
+      clawhub_source_repo: openclaw/clawhub
+      clawhub_source_ref: main
     secrets:
       clawhub_token: ${{ secrets.CLAWHUB_TOKEN }}
 ```
@@ -135,7 +150,7 @@ jobs:
 ### `skill-publish.yml` 核心步骤
 
 1. Checkout 仓库代码，安装 Bun。
-2. 通过 GitHub OIDC（`id-token: write`）解析 ClawHub 可复用工作流来源，checkout ClawHub CLI 源码。
+2. 通过输入参数 `clawhub_source_repo` / `clawhub_source_ref` 显式 checkout ClawHub CLI 源码（默认 `openclaw/clawhub@main`）。
 3. 校验发布模式：非 dry-run 时必须提供 `clawhub_token`。
 4. 写入 ClawHub 配置（registry + token）。
 5. 定位技能目录（含 `SKILL.md` 的目录），逐个执行 `skill publish`。
