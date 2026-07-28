@@ -229,7 +229,7 @@ jobs:
                           return line.split(":", 1)[1].strip()
               return None
 
-          def publish_with_poll(command, slug, folder, max_retries, poll_seconds):
+          def publish_with_poll(command, slug, folder, max_retries, poll_seconds, poll_pending=True):
               for attempt in range(max_retries + 1):
                   completed = subprocess.run(command, cwd=workspace, capture_output=True, text=True)
                   if completed.returncode != 0:
@@ -242,7 +242,7 @@ jobs:
                   except (KeyError, ValueError, json.JSONDecodeError) as exc:
                       return {"ok": False, "slug": slug, "folder": folder, "message": f"Invalid publish output: {exc}"}
 
-                  if status != "pending-publication" or attempt == max_retries:
+                  if status != "pending-publication" or attempt == max_retries or (not poll_pending and status == "pending-publication"):
                       result["_pollAttempts"] = attempt
                       return {"ok": True, "status": status, "result": result}
 
@@ -284,7 +284,7 @@ jobs:
                   if local_version and remote_version and local_version != remote_version:
                       print(f"SKILL.md version ({remote_version} -> {local_version}) differs from ClawHub but fingerprint unchanged; forcing publish with explicit --version...")
                       forced_command = command + ["--version", local_version]
-                      outcome = publish_with_poll(forced_command, target.name, relative_path, pending_poll_retries, pending_poll_seconds)
+                      outcome = publish_with_poll(forced_command, target.name, relative_path, pending_poll_retries, pending_poll_seconds, poll_pending=False)
                       if not outcome["ok"]:
                           message = outcome["message"]
                           if "already exists" in message.lower():
@@ -298,6 +298,9 @@ jobs:
                       status = outcome["status"]
                       result = outcome["result"]
                       result["_forcedVersionPublish"] = True
+                      if status == "pending-publication":
+                          print(f"Version {local_version} submitted and is pending review on ClawHub.")
+                          result["_pendingReview"] = True
 
               results[status_keys[status]].append(result)
 

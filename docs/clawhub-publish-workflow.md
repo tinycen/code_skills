@@ -83,6 +83,8 @@ secrets:
 
 另外，CLI 的发布决策基于**内容指纹**而非 `SKILL.md` 里的 `version` 字段。需要注意：CLI 输出中的 `version` 字段是**自动递增的下一个 patch 版本**（如 `1.1.1` → `1.1.2`），并非 `SKILL.md` 中实际声明的版本。因此，如果 `SKILL.md` 中声明的版本号与 ClawHub 上最新版本不一致但指纹相同，工作流会自动读取 `SKILL.md` 的 `version` 并追加 `--version <skill_md_version>` 参数强制发布，确保版本号变更也能触发 ClawHub 更新。
 
+强制发布首次返回 `pending-publication` 时，不再轮询，直接归入 `pendingPublication` 并标记 `_pendingReview: true`，表示版本已提交、等待 ClawHub 自动安全校验完成。校验期间网站可能仍显示旧版本，属于正常现象。
+
 因此**更新已有技能可以自动对应**，前提是 `owner`（`@tinycen`）和技能 slug 与 ClawHub 上已有的一致。`release-clawhub.yml` 中已配置：
 
 ```yaml
