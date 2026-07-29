@@ -35,6 +35,9 @@ code-review/
 │   ├── python_dependency_installation/          # Python 依赖安装
 │   │   ├── review_tools.md                      # 审查工具依赖安装
 │   │   └── project_dependencies.md              # 项目业务依赖安装
+│   ├── frontend_dependency_installation/        # 前端依赖安装
+│   │   ├── node_environment.md                  # Node 环境管理（Volta）
+│   │   └── project_dependencies.md              # 前端项目业务依赖安装
 │   └── language_checks/                         # 语言专项检查
 │       ├── python_type_check.md                 # Python 类型检查
 │       ├── python_pypi_packaging.md             # Python PyPI 包依赖与打包
@@ -284,9 +287,13 @@ docs/code_reviews/
 | Pyright 版本不兼容 | 检查项目 `pyrightconfig.json` 或 `pyproject.toml` 中 Python 版本配置，并按 [review_tools.md](references/python_dependency_installation/review_tools.md) 升级 |
 | pyupgrade 安装失败 | 按 [review_tools.md > pyupgrade](references/python_dependency_installation/review_tools.md#pyupgrade) 的 fallback 链执行，全部失败后注明「pyupgrade 检查未执行」 |
 | Ruff 安装失败 | 优先使用项目已配置的 `ruff check`；否则按 [review_tools.md > Ruff](references/python_dependency_installation/review_tools.md#ruff) 的 fallback 链执行，全部失败后注明「Ruff 弃用检查未执行」 |
+| 前端项目 Node 环境不存在或版本不匹配 | 按 [frontend_dependency_installation/node_environment.md](references/frontend_dependency_installation/node_environment.md) 使用 Volta 安装/切换 Node 版本；失败后注明「Node 环境准备失败」并降级执行 |
+| 前端项目 `node_modules` 缺失导致 tsc/ESLint 大量误报 | 按 [frontend_dependency_installation/project_dependencies.md](references/frontend_dependency_installation/project_dependencies.md) 安装项目业务依赖；安装失败后在报告中注明并降级执行 |
+| 前端项目存在多个锁文件 | 按 pnpm > yarn > bun > npm 优先级选择包管理器，避免混用导致依赖不一致 |
 
 ## 安装与更新
 
 Skill 的安装说明与更新步骤，详见 [references/installation.md](references/installation.md)。
 审查执行过程中所需工具依赖（Pyright、Pyrefly、pyupgrade、Ruff 等）的环境检测、安装与升级说明，详见 [references/python_dependency_installation/review_tools.md](references/python_dependency_installation/review_tools.md)。
-被审查项目业务依赖的安装策略，详见 [references/python_dependency_installation/project_dependencies.md](references/python_dependency_installation/project_dependencies.md)。
+被审查 Python 项目业务依赖的安装策略，详见 [references/python_dependency_installation/project_dependencies.md](references/python_dependency_installation/project_dependencies.md)。
+被审查前端项目的 Node 环境准备（Volta）与业务依赖安装策略，分别详见 [references/frontend_dependency_installation/node_environment.md](references/frontend_dependency_installation/node_environment.md) 和 [references/frontend_dependency_installation/project_dependencies.md](references/frontend_dependency_installation/project_dependencies.md)。

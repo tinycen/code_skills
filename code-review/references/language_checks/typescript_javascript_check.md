@@ -11,6 +11,21 @@
 - **辅助定位**：tsc 和 ESLint 的诊断信息仅作为问题「线索」，不能直接等同于最终分级结果。必须结合代码上下文阅读分析后，判断是否为真实问题及其实际严重程度。
 - **项目配置优先**：若项目已配置 `tsconfig.json`、`tsconfig.*.json`、`.eslintrc.*`、`eslint.config.*`，以项目自身配置为准。执行时优先使用项目已有配置，不强制覆盖。
 
+## 环境准备
+
+> 本节说明执行 tsc / ESLint 前的前端环境与依赖准备策略。
+
+### 本地审查场景
+
+- 以用户当前本地环境为准，不自动安装 Node、不安装项目依赖。
+- 若用户本地缺少 `node_modules`，按下方 fallback 链降级执行，并在报告中注明环境状态。
+
+### 远程 Claw 场景
+
+- **Node 环境准备**：先按 [frontend_dependency_installation/node_environment.md](../frontend_dependency_installation/node_environment.md) 检测 Node 环境；若未安装或版本不匹配，使用 Volta 安装/切换至项目所需 Node 版本。
+- **项目依赖安装**：Node 环境就绪后，按 [frontend_dependency_installation/project_dependencies.md](../frontend_dependency_installation/project_dependencies.md) 安装/更新 `node_modules`，确保第三方类型、ESLint 插件和框架配置可正确解析。
+- 依赖安装完成后，再执行下方的 tsc / ESLint 检查。
+
 ## TypeScript 编译检查（tsc）
 
 - ⚠️ **强制四步 fallback 链**：必须按以下顺序执行，每步失败才进入下一步，禁止在任何中间步骤直接跳过编译检查：
