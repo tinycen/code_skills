@@ -43,6 +43,11 @@ on:
         required: false
         type: string
         default: ""
+      version:
+        description: Optional explicit version to publish. When set, passed to clawhub skill publish --version (leading 'v' is stripped).
+        required: false
+        type: string
+        default: ""
       clawhub_source_repo:
         description: Repository containing the ClawHub CLI source.
         required: false
@@ -149,6 +154,7 @@ jobs:
           INPUT_SITE: ${{ inputs.site }}
           INPUT_REGISTRY: ${{ inputs.registry }}
           INPUT_REF: ${{ inputs.ref }}
+          INPUT_VERSION: ${{ inputs.version }}
           PENDING_POLL_SECONDS: ${{ inputs.pending_poll_seconds }}
           PENDING_POLL_RETRIES: ${{ inputs.pending_poll_retries }}
           SOURCE_REPOSITORY: ${{ github.repository }}
@@ -207,6 +213,8 @@ jobs:
           dry_run = os.environ["INPUT_DRY_RUN"] == "true"
           owner = os.environ["INPUT_OWNER"].strip()
           tags = os.environ["INPUT_TAGS"].strip()
+          version_input = os.environ["INPUT_VERSION"].strip()
+          version = version_input[1:] if version_input.startswith("v") else version_input
 
           pending_poll_seconds = max(0, int(os.environ.get("PENDING_POLL_SECONDS", "5")))
           pending_poll_retries = max(0, int(os.environ.get("PENDING_POLL_RETRIES", "3")))
@@ -270,10 +278,17 @@ jobs:
                   command += ["--tags", tags]
               if source_ref:
                   command += ["--source-ref", source_ref]
+              if version:
+                  command += ["--version", version]
 
               outcome = publish_with_poll(command, target.name, relative_path, pending_poll_retries, pending_poll_seconds)
               if not outcome["ok"]:
-                  results["failed"].append({"slug": outcome["slug"], "folder": outcome["folder"], "message": outcome["message"]})
+                  message = outcome["message"]
+                  if version and "already exists" in message.lower():
+                      print(f"Version {version} already exists on ClawHub; treating as unchanged.")
+                      results["alreadySynced"].append({"slug": outcome["slug"], "folder": outcome["folder"], "_version": version, "_alreadyExistsMessage": message})
+                  else:
+                      results["failed"].append({"slug": outcome["slug"], "folder": outcome["folder"], "message": message})
                   continue
 
               status = outcome["status"]

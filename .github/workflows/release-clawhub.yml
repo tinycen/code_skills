@@ -16,6 +16,7 @@ jobs:
       dry_run: false
       owner: "@tinycen"
       tags: latest
+      version: ${{ github.ref_name }}
       registry: https://clawhub.ai
       site: https://clawhub.ai
       clawhub_source_repo: openclaw/clawhub

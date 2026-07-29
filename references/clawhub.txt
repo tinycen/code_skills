@@ -1,3 +1,7 @@
 Docs
 
+https://docs.openclaw.ai/clawhub/cli.md
+
+https://docs.openclaw.ai/clawhub/publishing.md
+
 https://docs.openclaw.ai/clawhub/skill-format.md
