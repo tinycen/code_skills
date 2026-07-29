@@ -95,8 +95,10 @@ code_skills/
     ├── SKILL.md                        # 技能入口文件
     └── references/                     # 参考文档
         ├── review_process.md           # 审查流程与规则
-        ├── report_template.md          # 审查报告模板
-        ├── ignored_issues_template.md  # 已忽略问题清单模板
+        ├── templates/                  # 报告与清单模板
+        │   ├── report.md               # 单仓审查报告模板
+        │   ├── cross_repo_report.md    # 跨仓库联调审查报告模板
+        │   └── ignored_issues_template.md  # 已忽略问题清单模板
         ├── repository_access.md        # 仓库获取规范
         ├── installation.md             # 安装与更新
 …………

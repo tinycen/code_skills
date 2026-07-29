@@ -74,7 +74,7 @@
 
 ### 步骤 7：生成审查报告
 
-按 [references/report_template.md](references/report_template.md) 生成 Markdown 格式报告：
+按 [references/templates/report.md](references/templates/report.md) 生成 Markdown 格式报告：
 
 - 报告必须包含截止提交信息。
 - 报告命名规则、空分类隐藏规则等详见 [references/report_delivery.md > 报告格式与命名](references/report_delivery.md#报告格式与命名)。

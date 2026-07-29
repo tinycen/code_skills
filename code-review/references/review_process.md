@@ -421,7 +421,7 @@ find <仓库路径> $SKIP_ARGS \( -name "Dockerfile*" -o -name "docker-compose*"
 
 ### 步骤 4：生成报告
 
-按照 `report_template.md` 模板生成审查报告。
+按照 `templates/report.md` 模板生成审查报告。
 
 **报告生成规则**：
 - 必须包含**截止提交**信息（最新 commit hash 与 commit message）
