@@ -24,12 +24,6 @@ TAG_NAME="v$VERSION"
 
 echo "Tag to create: $TAG_NAME"
 
-# 可选：提示 README.md 中的版本是否一致
-README_VERSION=$(grep -E "\|\s*\[?$PROJECT_DIR\]?\(" "$SCRIPT_DIR/README.md" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -n 1 || true)
-if [ -n "$README_VERSION" ] && [ "$README_VERSION" != "$VERSION" ]; then
-    echo "Warning: README.md shows version $README_VERSION, but $PROJECT_DIR/SKILL.md has $VERSION"
-fi
-
 # 检查 tag 是否已存在
 if git rev-parse "$TAG_NAME" >/dev/null 2>&1; then
     echo "Error: Tag $TAG_NAME already exists locally."
