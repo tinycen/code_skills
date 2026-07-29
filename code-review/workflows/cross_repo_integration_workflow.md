@@ -96,6 +96,8 @@
 - 加载后端仓库的 `ignored_issues.md`。
 - 合并去重后作为本次审查的忽略清单来源。
 
+> **并行执行提示**：环境支持子代理时，从本步骤开始可按照 [strategies/subagent_strategy.md](strategies/subagent_strategy.md) 并行派发前端单仓审查、后端单仓审查与跨仓联调一致性检查。各子任务结果返回后统一合并到最终报告。
+
 ### 步骤 7：分别执行单仓代码审查
 
 按 [references/review_process.md](../references/review_process.md) 分别对前端仓库和后端仓库执行：

@@ -13,6 +13,25 @@ author: tinycen
 
 ---
 
+## 🔧 工作流
+
+`workflows/` 目录包含本 Skill 的核心执行流程，按触发场景分为以下工作流：
+
+| 工作流 | 说明 | 文档 |
+|--------|------|------|
+| 工作流一：手动触发 | 用户主动要求审查单个仓库时使用，无条件执行完整审查流程。 | [workflows/manual_workflow.md](workflows/manual_workflow.md) |
+| 工作流二：定时触发 | 定时任务或自动化调度触发单个仓库审查时使用，先检查版本是否变化，仅在有变化时执行审查。 | [workflows/scheduled_workflow.md](workflows/scheduled_workflow.md) |
+| 工作流三：前后端跨仓库联调审查 | 用户显式指明前后端仓库对照关系时使用，分别审查前后端单仓质量，并检查联调一致性。支持手动与定时两种触发模式。 | [workflows/cross_repo_integration_workflow.md](workflows/cross_repo_integration_workflow.md) |
+
+工作流执行时可按需启用并行加速策略：
+
+- 环境支持子代理时，跨仓库联调审查、多仓库批量审查等场景可按 [workflows/strategies/subagent_strategy.md](workflows/strategies/subagent_strategy.md) 拆分任务并行执行，以缩短整体耗时。
+- 子代理策略为可选策略，环境不支持时自动降级为串行执行，不影响审查流程完整性。
+
+执行前必须先确定当前场景并选择对应工作流，禁止混用。跨仓库联调审查必须确认用户已显式指明前后端对照关系，不得仅凭两个仓库地址自动推断。
+
+---
+
 ## 🎯 场景路由表
 
 | 场景 | 文档 |
@@ -30,20 +49,6 @@ author: tinycen
 
 ---
 
-## 🔧 工作流
-
-`workflows/` 目录包含本 Skill 的核心执行流程，按触发场景分为两个工作流：
-
-| 工作流 | 说明 | 文档 |
-|--------|------|------|
-| 工作流一：手动触发 | 用户主动要求审查单个仓库时使用，无条件执行完整审查流程。 | [workflows/manual_workflow.md](workflows/manual_workflow.md) |
-| 工作流二：定时触发 | 定时任务或自动化调度触发单个仓库审查时使用，先检查版本是否变化，仅在有变化时执行审查。 | [workflows/scheduled_workflow.md](workflows/scheduled_workflow.md) |
-| 工作流三：前后端跨仓库联调审查 | 用户显式指明前后端仓库对照关系时使用，分别审查前后端单仓质量，并检查联调一致性。支持手动与定时两种触发模式。 | [workflows/cross_repo_integration_workflow.md](workflows/cross_repo_integration_workflow.md) |
-
-执行前必须先确定当前场景并选择对应工作流，禁止混用。跨仓库联调审查必须确认用户已显式指明前后端对照关系，不得仅凭两个仓库地址自动推断。
-
----
-
 ## 📁 文件目录结构
 
 ```
@@ -52,7 +57,9 @@ code-review/
 ├── workflows/                      # 工作流编排
 │   ├── manual_workflow.md          # 工作流一：手动触发
 │   ├── scheduled_workflow.md       # 工作流二：定时触发
-│   └── cross_repo_integration_workflow.md  # 工作流三：前后端跨仓库联调审查
+│   ├── cross_repo_integration_workflow.md  # 工作流三：前后端跨仓库联调审查
+│   └── strategies/                 # 工作流执行策略
+│       └── subagent_strategy.md    # 子代理并行审查策略
 └── references/                     # 参考文档
     ├── review_process.md           # 代码审查流程与规则
     ├── cross_repo_integration_checks.md  # 跨仓库联调一致性检查维度
