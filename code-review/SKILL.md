@@ -86,8 +86,9 @@ code-review/
 
 ## 📂 报告输出目录结构
 
-审查报告默认输出到被审查项目的 `docs/code_reviews/` 目录：
+审查报告默认输出到被审查项目的 `docs/code_reviews/` 目录。
 
+**单仓审查**（工作流一、工作流二）：
 ```
 docs/code_reviews/
 ├── <日期>-<模型>-代码审查报告.md    # 新生成的审查报告（待用户处理）
@@ -98,6 +99,12 @@ docs/code_reviews/
 │   └── ...
 └── ignored_issues.md               # 已忽略问题清单（自动维护，跨次审查持久化）
 ```
+
+**跨仓库联调审查**（工作流三）：
+- 前端单仓报告：`前端仓库/docs/code_reviews/<日期>-<模型>-前端代码审查报告.md`
+- 后端单仓报告：`后端仓库/docs/code_reviews/<日期>-<模型>-后端代码审查报告.md`
+- 联调报告：`主仓库/docs/code_reviews/<日期>-<模型>-前后端联调审查报告.md`
+- 忽略清单：`主仓库/docs/code_reviews/ignored_issues.md`
 
 > `fixed/` 与 `archived/` 目录说明：
 > - **`fixed/`（收件箱）**：用户查看报告后，将已确认处理（标记了忽略或修复了问题）的报告移至 `fixed/` 目录。
