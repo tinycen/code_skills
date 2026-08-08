@@ -44,7 +44,7 @@ author: tinycen
 | 报告格式、保存、分发与通知 | [references/report_delivery.md](references/report_delivery.md) |
 | 单仓审查报告模板 | [references/templates/report.md](references/templates/report.md) |
 | 跨仓库联调审查报告模板 | [references/templates/cross_repo_report.md](references/templates/cross_repo_report.md) |
-| 已忽略问题清单模板 | [references/templates/ignored_issues_template.md](references/templates/ignored_issues_template.md) |
+| 已忽略与误报问题清单模板 | [references/templates/ignored_issues_template.md](references/templates/ignored_issues_template.md) |
 | 安装与更新 | [references/installation.md](references/installation.md) |
 
 ---
@@ -67,7 +67,7 @@ code-review/
     ├── templates/                  # 报告与清单模板
     │   ├── report.md               # 单仓审查报告模板
     │   ├── cross_repo_report.md    # 跨仓库联调审查报告模板
-    │   └── ignored_issues_template.md  # 已忽略问题清单模板
+    │   └── ignored_issues_template.md  # 已忽略与误报问题清单模板
     ├── repository_access.md        # 仓库获取规范
     ├── installation.md             # 安装与更新
     ├── python_dependency_installation/          # Python 依赖安装
@@ -97,18 +97,18 @@ docs/code_reviews/
 ├── archived/                       # 已被工具扫描归档的报告（不再重复扫描）
 │   ├── <日期>-<模型>-代码审查报告.md
 │   └── ...
-└── ignored_issues.md               # 已忽略问题清单（自动维护，跨次审查持久化）
+└── ignored_issues.md               # 已忽略与误报问题清单（自动维护，跨次审查持久化）
 ```
 
 **跨仓库联调审查**（工作流三）：
 - 前端单仓报告：`前端仓库/docs/code_reviews/<日期>-<模型>-前端代码审查报告.md`
 - 后端单仓报告：`后端仓库/docs/code_reviews/<日期>-<模型>-后端代码审查报告.md`
 - 联调报告：`主仓库/docs/code_reviews/<日期>-<模型>-前后端联调审查报告.md`
-- 忽略清单：`主仓库/docs/code_reviews/ignored_issues.md`
+- 忽略与误报清单：`主仓库/docs/code_reviews/ignored_issues.md`
 
 > `fixed/` 与 `archived/` 目录说明：
-> - **`fixed/`（收件箱）**：用户查看报告后，将已确认处理（标记了忽略或修复了问题）的报告移至 `fixed/` 目录。
-> - **`archived/`（归档）**：工具在审查前扫描 `fixed/` 目录中的报告提取忽略标记后，**自动把 `fixed/` 下全部报告移动到 `archived/` 目录**，使 `fixed/` 保持为空。下次审查只扫描用户新放入 `fixed/` 的报告，避免重复扫描。
+> - **`fixed/`（收件箱）**：用户查看报告后，将已确认处理（标记了忽略、误报或修复了问题）的报告移至 `fixed/` 目录。
+> - **`archived/`（归档）**：工具在审查前扫描 `fixed/` 目录中的报告提取忽略与误报标记后，**自动把 `fixed/` 下全部报告移动到 `archived/` 目录**，使 `fixed/` 保持为空。下次审查只扫描用户新放入 `fixed/` 的报告，避免重复扫描。
 > - **报告扫描范围**：仅扫描 `fixed/`，不扫描 `archived/`（已归档），也不扫描根目录下的新生成报告。
 > - **原报告引用**：`ignored_issues.md` 中「原报告」字段只记录文件名，对应文件已归档于 `docs/code_reviews/archived/` 子目录。
 

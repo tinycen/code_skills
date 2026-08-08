@@ -7,9 +7,9 @@
 | 无 Git 配置（git 命令不存在） | 1. 提示用户安装 Git；2. 若无法安装，尝试使用 curl/wget 下载 ZIP 包解压作为备选 |
 | Tag 不存在 | 使用 git tag -l 查看可用 tag，或使用 commit hash 替代 |
 | 文件夹不存在 | 自动创建 CodeReview 及项目子文件夹 |
-| 已忽略问题清单不存在 | 首次审查时 `ignored_issues.md` 可能不存在，属于正常情况，工具会自动创建 |
-| 已忽略问题仍在报告中出现 | 1. 检查 `ignored_issues.md` 中对应条目的「文件路径」和「问题标题」是否与新报告中的问题完全一致；2. 确认用户是否使用了标准忽略标记（如 `（忽略）` / `(ignore)` 等）；3. 若用户手动编辑了清单，检查格式是否正确（应为 Markdown 表格行）；4. 如需恢复跟踪，从清单中删除对应条目即可 |
-| 误报忽略（不想忽略却被记录） | 1. 打开 `ignored_issues.md` 手动删除对应条目；2. 下次审查将恢复跟踪该问题；3. 若频繁误报，检查忽略标记识别规则是否过于宽泛 |
+| 已忽略与误报问题清单不存在 | 首次审查时 `ignored_issues.md` 可能不存在，属于正常情况，工具会自动创建 |
+| 已忽略或误报问题仍在报告中出现 | 1. 检查 `ignored_issues.md` 中对应条目的「文件路径」和「问题标题」是否与新报告中的问题完全一致；2. 确认用户是否使用了标准标记（忽略：`（忽略）` / `(ignore)` 等；误报：`（误报）` / `(false positive)` / `(FP)` 等）；3. 若用户手动编辑了清单，检查格式是否正确（应为 Markdown 表格行）；4. 如需恢复跟踪，从清单中删除对应条目即可 |
+| 误标记（不想忽略或误报却被记录） | 1. 打开 `ignored_issues.md` 手动删除对应条目；2. 下次审查将恢复跟踪该问题；3. 若频繁误标记，检查标记识别规则是否过于宽泛 |
 | Pyright / Pyrefly / pyupgrade / Ruff 等工具未安装 | 统一参考 [references/python_dependency_installation/review_tools.md](references/python_dependency_installation/review_tools.md)。执行前应先检测环境（uv / Conda / pip / pipx）和已安装版本，优先升级 |
 | Pyright 安装失败 | 按 [review_tools.md > Pyright](references/python_dependency_installation/review_tools.md#pyright) 的 fallback 链执行，全部失败后注明「Pyright 安装失败，未执行类型检查」 |
 | Pyrefly 安装失败 | 按 [review_tools.md > Pyrefly](references/python_dependency_installation/review_tools.md#pyrefly) 的 fallback 链执行，全部失败后注明「Pyrefly 安装失败，未执行交叉验证检查」，不影响 Pyright 主检查 |
