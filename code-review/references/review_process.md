@@ -18,6 +18,7 @@
 | 旧文件 | `old_file`, `old_files`, `old`, `old_code`, `旧文件`, `旧代码`, `旧版` |
 | 遗留代码 | `legacy`, `legacy_code`, `遗留`, `遗留代码` |
 | 归档/备份 | `archive`, `archives`, `archived`, `bak`, `backup`, `backups`, `归档`, `备份`, `备份文件` |
+| 参考文档 | `references`, `reference`, `参考文档`, `参考`, `参考材料` |
 
 ### 用户自定义跳过标记
 
@@ -394,7 +395,7 @@
 
 ```bash
 # 生成排除参数（废弃目录固定命名 + 用户标记文件）
-SKIP_DIRS=(deprecated deprecated_files deprecated_code obsolete obsolete_files old_file old_files old old_code legacy legacy_code archive archives archived bak backup backups 废弃 废弃代码 弃用 弃用代码 旧文件 旧代码 旧版 遗留 遗留代码 归档 备份 备份文件)
+SKIP_DIRS=(deprecated deprecated_files deprecated_code obsolete obsolete_files old_file old_files old old_code legacy legacy_code archive archives archived bak backup backups 废弃 废弃代码 弃用 弃用代码 旧文件 旧代码 旧版 遗留 遗留代码 归档 备份 备份文件 references reference 参考文档 参考 参考材料)
 SKIP_ARGS=""
 for d in "${SKIP_DIRS[@]}"; do
   SKIP_ARGS="$SKIP_ARGS -not -path '*/$d/*'"
