@@ -54,6 +54,7 @@ project/
 ### 检查项
 
 - **检查项**：目录结构是否规范，是否在 src layout 与 flat layout 之间混用
+- **检查项**：包目录名是否为合法 Python 标识符（不以数字开头、不含连字符/空格等非法字符），否则相对导入无法被正确解析
 - **检查项**：包名目录是否与 `pyproject.toml` / `setup.py` / `setup.cfg` 中声明的 `name` 一致
 - **检查项**：setup.py / pyproject.toml 是否完整，是否包含必要的元数据（name、version、author、license、dependencies 等）
 - **检查项**：MANIFEST.in 是否配置，确保模板、数据文件、配置文件等非 Python 文件被打包
