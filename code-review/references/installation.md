@@ -1,5 +1,7 @@
 # 安装与更新
 
+> 本文档仅涉及 **code-review 技能本身** 的安装与更新。审查工具（Pyright、Pyrefly、pyupgrade、Ruff 等）与项目业务依赖等审查环境准备，另见 SKILL.md「📦 安装与更新 > 审查环境准备」。
+
 本技能支持多种使用场景，请根据当前环境选择对应的安装方式。
 
 ---
@@ -15,6 +17,14 @@
 下载并放置到当前工具对应的技能目录中。
 ```
 
+> 💡 若 ClawHub 官方域名在国内网络不通，可使用国内镜像源，Prompt 改为：
+
+```
+请帮我安装 code-review 技能。
+来源：https://cn.clawhub-mirror.com/tinycen/code-review
+下载并放置到当前工具对应的技能目录中。
+```
+
 **优势**：
 - **零配置**：不需要了解技能目录路径，AI 助手会自动检测当前工具的技能存放位置
 - **跨工具通用**：无论使用 Qoder、Cursor、Windsurf 还是其他 AI IDE，同一句 Prompt 即可完成
@@ -25,6 +35,13 @@
 ```
 请帮我更新 code-review 技能到最新版本。
 来源：https://clawhub.ai/tinycen/skills/code-review
+```
+
+> 💡 同样，若官方域名网络不通，可使用国内镜像源更新：
+
+```
+请帮我更新 code-review 技能到最新版本。
+来源：https://cn.clawhub-mirror.com/tinycen/code-review
 ```
 
 > 💡 如果无法自动安装，请参考下方的安装方式。
@@ -186,6 +203,30 @@ find . .. -path "*/code-review/SKILL.md" 2>/dev/null
 ### 本地修改后的生效
 
 文件保存后，Agent 在下一轮对话或重新加载上下文时即可读取最新内容，无需额外操作。
+
+---
+
+## 国内网络环境下使用镜像安装
+
+> ClawHub 在国内常常连接失败，因此官方推荐国内用户优先使用中国镜像地址进行安装与更新。
+
+**等效镜像域名**：
+
+| 地址 | 说明 |
+|------|------|
+| `https://cn.clawhub-mirror.com/` | 官方推荐的国内镜像地址（本技能安装路径：`https://cn.clawhub-mirror.com/tinycen/code-review`） |
+
+**命令行切换方式（任选一种）**：
+
+```bash
+# 方式一：单次安装时指定 registry
+npx clawhub@latest install 技能名 --registry=https://cn.clawhub-mirror.com
+
+# 方式二：全局修改配置，以后默认走镜像
+clawhub config set registry https://cn.clawhub-mirror.com
+```
+
+> 💡 设置 registry 后，后续所有 ClawHub 技能的安装 / 更新命令都会默认走中国镜像，无需每次都指定。
 
 ---
 

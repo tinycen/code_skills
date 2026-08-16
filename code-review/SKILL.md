@@ -1,7 +1,7 @@
 ---
 name: code-review
 description: 代码审查 Skill - 自动化代码质量检查与报告生成工具。支持从 GitHub 等仓库克隆代码、执行多维度代码质量检查、生成结构化审查报告并按场景保存与分发。当用户提到"代码审查"、"code review"、"检查代码质量"、"审查报告"等操作时，或当用户主动提及使用本 skill / 调用本技能时，请使用本 skill。
-version: 1.3.4
+version: 1.3.5
 author: tinycen
 ---
 
@@ -122,7 +122,13 @@ docs/code_reviews/
 
 ## 📦 安装与更新
 
+### 技能安装
+
 Skill 的安装说明与更新步骤，详见 [references/installation.md](references/installation.md)。
-审查执行过程中所需工具依赖（Pyright、Pyrefly、pyupgrade、Ruff 等）的环境检测、安装与升级说明，详见 [references/python_dependency_installation/review_tools.md](references/python_dependency_installation/review_tools.md)。
-被审查 Python 项目业务依赖的安装策略，详见 [references/python_dependency_installation/project_dependencies.md](references/python_dependency_installation/project_dependencies.md)。
-被审查前端项目的 Node 环境准备（Volta）与业务依赖安装策略，分别详见 [references/frontend_dependency_installation/node_environment.md](references/frontend_dependency_installation/node_environment.md) 和 [references/frontend_dependency_installation/project_dependencies.md](references/frontend_dependency_installation/project_dependencies.md)。
+
+### 审查环境准备
+
+执行审查前需准备所需的审查工具与项目业务依赖：
+- Python 审查工具依赖（Pyright、Pyrefly、pyupgrade、Ruff 等）的环境检测、安装与升级，详见 [references/python_dependency_installation/review_tools.md](references/python_dependency_installation/review_tools.md)。
+- 被审查 Python 项目业务依赖的安装策略，详见 [references/python_dependency_installation/project_dependencies.md](references/python_dependency_installation/project_dependencies.md)。
+- 被审查前端项目的 Node 环境准备（Volta）与业务依赖安装策略，分别详见 [references/frontend_dependency_installation/node_environment.md](references/frontend_dependency_installation/node_environment.md) 和 [references/frontend_dependency_installation/project_dependencies.md](references/frontend_dependency_installation/project_dependencies.md)。
