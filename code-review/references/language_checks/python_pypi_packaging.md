@@ -12,11 +12,52 @@
 - **检查项**：是否存在冲突依赖
 - **检查项**：依赖包是否存在已知漏洞（CVE）
 
+## 私有包
+
+- **检查项**：项目是否依赖私有包（如内部 registry 中的包）
+  - 若存在私有包依赖，为方便 uv 正确解析，建议在 `pyproject.toml` 中添加 `[[tool.uv.index]]` 声明私有源，并通过 `[tool.uv.sources]` 将依赖映射到对应源。示例：
+
+    ```toml
+    [[tool.uv.index]]
+    name = "private"
+    url = "https://private.example.com/simple"
+
+    [tool.uv.sources]
+    my-private-package = { index = "private" }
+    ```
+
 ## 包导入导出
 
 - **检查项**：__init__.py 是否正确导出
 - **检查项**：循环导入是否存在
 - **检查项**：未使用的导入是否清理
+
+## 打包方式
+
+- **检查项**：是否仍使用旧版 `setup.py` 打包方式（如 `python setup.py sdist bdist_wheel`）
+  - 该命令已被官方明确弃用，检测到旧版方式时应推荐迁移：
+    1. 在 `pyproject.toml` 中声明构建后端（如 setuptools、hatchling、flit 等）
+    2. 使用 `python -m build` 构建 sdist + wheel
+    3. 使用 Twine 上传到 PyPI
+- **检查项**：`pyproject.toml` 是否声明了 `[build-system]` 段（`build-backend` 与 `requires`）
+- **检查项**：CI/CD 发布流水线（如 `.github/workflows/`、`.cnb.yml` 等配置文件）中的打包构建环境是否为新版本
+  - 若存在自动化发布配置，建议在打包前先升级相关构建工具链，避免打包过程中出现异常。原因：
+    - PEP 794 之后，产物使用核心元数据 2.5，需要 `twine >= 7` 才能识别该版本（twine 7 未再强行覆盖 packaging 的合法元数据版本列表）
+    - `packaging >= 26.0` 才支持 `Metadata-Version: 2.5`，否则 twine 会报 `'2.5' is not a valid metadata version`
+  - 推荐在流水线中加入如下步骤：
+
+    ```yaml
+    - name: Install Build Tools
+      # 跟进 PEP 794：产物使用核心元数据 2.5，需要 twine >= 7 才认识该版本
+      # （twine 7 未再强行覆盖 packaging 的合法元数据版本列表）
+      script: pip install -U build twine
+    - name: Upgrade packaging
+      # packaging >= 26.0 才支持 Metadata-Version: 2.5，
+      # 否则 twine 会报 '2.5' is not a valid metadata version
+      script:
+        - pip install -U "packaging>=26.0"
+        - python -c "import packaging, twine; print('packaging', packaging.__version__); print('twine', twine.__version__)"
+    ```
 
 ## 包结构
 
