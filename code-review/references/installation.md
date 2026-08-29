@@ -17,12 +17,12 @@
 下载并放置到当前工具对应的技能目录中。
 ```
 
-> 💡 若 ClawHub 官方域名在国内网络不通，可使用国内镜像源，Prompt 改为：
+> 💡 若 ClawHub 官方域名在国内网络不通，可从 ModelScope 下载最新版本，Prompt 改为：
 
 ```
 请帮我安装 code-review 技能。
-来源：https://cn.clawhub-mirror.com/tinycen/code-review
-下载并放置到当前工具对应的技能目录中。
+来源：https://modelscope.cn/skills/tinycen/code-review/archive/zip/master.zip
+下载压缩包、解压后放置到当前工具对应的技能目录中。
 ```
 
 **优势**：
@@ -37,11 +37,11 @@
 来源：https://clawhub.ai/tinycen/skills/code-review
 ```
 
-> 💡 同样，若官方域名网络不通，可使用国内镜像源更新：
+> 💡 同样，若官方域名网络不通，可从 ModelScope 下载最新版本覆盖安装：
 
 ```
 请帮我更新 code-review 技能到最新版本。
-来源：https://cn.clawhub-mirror.com/tinycen/code-review
+来源：https://modelscope.cn/skills/tinycen/code-review/archive/zip/master.zip
 ```
 
 > 💡 如果无法自动安装，请参考下方的安装方式。
@@ -206,27 +206,38 @@ find . .. -path "*/code-review/SKILL.md" 2>/dev/null
 
 ---
 
-## 国内网络环境下使用镜像安装
+## 国内网络环境下从 ModelScope 备选安装
 
-> ClawHub 在国内常常连接失败，因此官方推荐国内用户优先使用中国镜像地址进行安装与更新。
+> ClawHub 在国内常常连接失败。由于第三方镜像站经常出现技能仓库同步错乱的问题，**不再提供镜像安装方式**。当官方 ClawHub 无法访问时，请从 ModelScope 下载最新版本安装。
 
-**等效镜像域名**：
+**备选下载地址**：
 
 | 地址 | 说明 |
 |------|------|
-| `https://cn.clawhub-mirror.com/` | 官方推荐的国内镜像地址（本技能安装路径：`https://cn.clawhub-mirror.com/tinycen/code-review`） |
+| `https://modelscope.cn/skills/tinycen/code-review/archive/zip/master.zip` | ModelScope 上的技能仓库 master 分支压缩包，始终为最新版本 |
 
-**命令行切换方式（任选一种）**：
+**下载并解压**：
 
-```bash
-# 方式一：单次安装时指定 registry
-npx clawhub@latest install 技能名 --registry=https://cn.clawhub-mirror.com
-
-# 方式二：全局修改配置，以后默认走镜像
-clawhub config set registry https://cn.clawhub-mirror.com
+```powershell
+# PowerShell
+$dest = "download_skills"
+New-Item -ItemType Directory -Path $dest -Force | Out-Null
+Invoke-WebRequest -Uri "https://modelscope.cn/skills/tinycen/code-review/archive/zip/master.zip" -OutFile "$dest/code-review.zip"
+Expand-Archive -Path "$dest/code-review.zip" -DestinationPath "$dest/code-review" -Force
+Remove-Item "$dest/code-review.zip"
 ```
 
-> 💡 设置 registry 后，后续所有 ClawHub 技能的安装 / 更新命令都会默认走中国镜像，无需每次都指定。
+```bash
+# Bash
+mkdir -p download_skills
+curl -L -o download_skills/code-review.zip "https://modelscope.cn/skills/tinycen/code-review/archive/zip/master.zip"
+unzip download_skills/code-review.zip -d download_skills/code-review
+rm download_skills/code-review.zip
+```
+
+解压后，将包含 `SKILL.md` 的技能目录移动到你所用工具的技能目录中，具体步骤与「场景二 > 首次安装」步骤 2 相同。更新时重新下载并覆盖旧目录即可。
+
+> ⚠️ ModelScope 的压缩包为 master 分支快照，不含 ClawHub 的版本号与签名校验信息，请通过 ModelScope 仓库页面确认技能内容后再使用。
 
 ---
 
@@ -247,6 +258,7 @@ clawhub config set registry https://cn.clawhub-mirror.com
 | 场景 | 安装方式 | 更新方式 |
 |------|---------|----------|
 | **Prompt 安装（推荐）** | **对话中发送安装 Prompt（见通用方式）** | **对话中发送更新 Prompt** |
+| ClawHub 无法访问时 | **从 ModelScope 下载 master.zip 解压安装（见 ModelScope 备选安装）** | 重新下载并覆盖旧目录 |
 | OpenClaw CLI | `openclaw skills install @tinycen/code-review` | `openclaw skills update @tinycen/code-review` |
 | OpenClaw 对话内 | `/skills install @tinycen/code-review` | `/skills update @tinycen/code-review` |
 | IDE / 其他 CLI | 下载到 `download_skills/` 后移动到技能目录 | 检测已有位置，下载覆盖 |
