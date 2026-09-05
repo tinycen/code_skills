@@ -20,6 +20,22 @@
 - **检查项**：返回类型注解是否与实际返回值一致
 - **检查项**：不同参数分支是否可能导致返回不同的数据类型，若是，建议通过 `@overload` 等方式显式声明，便于 IDE 与类型检查器识别
 
+## 参数类型注解检查
+
+- **检查项**：当参数仅接受一组固定取值（如 `"asc"` / `"desc"`、`"http"` / `"https"` 等魔法字符串或数字常量）时，是否使用 `typing.Literal` 显式声明取值范围，而非宽泛的 `str` / `int`
+  - 使用 `Literal` 后，IDE 可在调用处自动补全候选值，Pyright / Pyrefly 可在传入非法值时静态报错，将潜在的运行时错误提前到编码阶段
+  - 示例：
+
+    ```python
+    from typing import Literal
+
+    def sort_items(items: list, order: Literal["asc", "desc"] = "asc") -> list:
+        ...
+    ```
+
+  - 若取值集合需要迭代、序列化或携带额外行为，可改用 `Enum`（Python 3.11+ 可用 `StrEnum`）
+- **检查项**：参数类型注解是否与函数内部实际校验逻辑一致（如代码内用 `if x not in ("a", "b")` 校验取值，注解却声明为宽泛的 `str`，属于注解与实现脱节）
+
 ## 项目依赖安装策略
 
 > 审查前是否安装被审查项目的业务依赖，按本地审查场景与远程 Claw 场景分别处理，详见 [python_dependency_installation/project_dependencies.md](../python_dependency_installation/project_dependencies.md)。
