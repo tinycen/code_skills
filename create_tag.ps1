@@ -31,7 +31,7 @@ $TAG_NAME = "v$VERSION"
 Write-Host "Tag to create: $TAG_NAME"
 
 # 检查 tag 是否已存在（本地）
-if (git rev-parse "$TAG_NAME" 2>$null) {
+if (git tag -l $TAG_NAME) {
     Write-Host "Error: Tag $TAG_NAME already exists locally."
     exit 1
 }
