@@ -1,7 +1,7 @@
 ---
 name: code-review
 description: 代码审查 Skill - 自动化代码质量检查与报告生成工具。支持从 GitHub 等仓库克隆代码、执行多维度代码质量检查、生成结构化审查报告并按场景保存与分发。当用户提到"代码审查"、"code review"、"检查代码质量"、"审查报告"等审查操作时，或当用户明确提到对 code-review（本技能）执行"安装 / 更新 / 升级"操作时，或当用户主动提及使用本 skill / 调用本技能时，请使用本 skill。
-version: 1.3.8
+version: 1.3.9
 author: tinycen
 ---
 
@@ -43,6 +43,7 @@ author: tinycen
 | 前后端跨仓库联调审查（用户显式指明前后端对照关系） | [workflows/cross_repo_integration_workflow.md](workflows/cross_repo_integration_workflow.md) |
 | 仓库获取、SSH 配置、版本信息获取 | [references/repository_access.md](references/repository_access.md) |
 | 审查规则、检查维度、问题分级 | [references/review_process.md](references/review_process.md) |
+| Python 异常处理检查（异常链 `raise ... from`） | [references/language_checks/python_exception_handling.md](references/language_checks/python_exception_handling.md) |
 | 报告格式、保存、分发与通知 | [references/report_delivery.md](references/report_delivery.md) |
 | 单仓审查报告模板 | [references/templates/report.md](references/templates/report.md) |
 | 跨仓库联调审查报告模板 | [references/templates/cross_repo_report.md](references/templates/cross_repo_report.md) |
@@ -81,6 +82,7 @@ code-review/
     └── language_checks/                         # 语言专项检查
         ├── python_type_check.md                 # Python 类型检查
         ├── python_pypi_packaging.md             # Python PyPI 包依赖与打包
+        ├── python_exception_handling.md         # Python 异常处理（异常链保留等）
         └── typescript_javascript_check.md       # TypeScript/JavaScript 检查
 ```
 

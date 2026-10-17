@@ -97,9 +97,11 @@
 - 项目配置优先：若项目 `pyproject.toml` 或 `ruff.toml` 中已配置 Ruff，优先使用项目自身的版本要求
 - 执行命令：
   - 若项目已配置 Ruff：`ruff check`
-  - 否则：`ruff check --select DEP --output-format=json`
+  - 否则：`ruff check --select DEP,B904,TRY002,TRY201,TRY400,BLE001,S110 --output-format=json`
+    - `DEP`：弃用依赖检查（原有）
+    - 异常处理相关规则（`B904` 等）用于支撑「异常处理检查」维度，规则含义详见 [language_checks/python_exception_handling.md > 检测手段](../language_checks/python_exception_handling.md#检测手段)
 - 专属 fallback 链（Python 包管理器安装/升级失败后使用）：
-  1. 若全部失败，在报告中注明「Ruff 弃用检查未执行（原因：安装失败）」并跳过该子项
+  1. 若全部失败，在报告中注明「Ruff 弃用检查未执行（原因：安装失败）」并跳过该子项（此时「异常处理检查」维度降级为文本检索，见对应文档）
 
 ---
 

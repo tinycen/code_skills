@@ -75,6 +75,7 @@ openclaw skills install @tinycen/code-review
 | 代码质量 | 代码重复、硬编码、魔法数字 |
 | 依赖管理 | 依赖版本、安全性、必要性 |
 | 类型检查 | Python: Pyright/Pyrefly，TypeScript/JavaScript: tsc |
+| 异常处理 | Python：异常链保留（`raise ... from ...`）、捕获范围、静默吞异常、异常日志堆栈 |
 
 ### 问题分级
 

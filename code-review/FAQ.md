@@ -17,7 +17,9 @@
 | Pyrefly 检查报错（内存/超时） | 1. 检查是否存在循环导入、超大文件或复杂类型推导导致分析超时；2. 尝试限制分析范围或排除大型生成文件；3. 若仍失败，跳过 Pyrefly 交叉验证维度 |
 | Pyright 版本不兼容 | 检查项目 `pyrightconfig.json` 或 `pyproject.toml` 中 Python 版本配置，并按 [review_tools.md](references/python_dependency_installation/review_tools.md) 升级 |
 | pyupgrade 安装失败 | 按 [review_tools.md > pyupgrade](references/python_dependency_installation/review_tools.md#pyupgrade) 的 fallback 链执行，全部失败后注明「pyupgrade 检查未执行」 |
-| Ruff 安装失败 | 优先使用项目已配置的 `ruff check`；否则按 [review_tools.md > Ruff](references/python_dependency_installation/review_tools.md#ruff) 的 fallback 链执行，全部失败后注明「Ruff 弃用检查未执行」 |
+| Ruff 安装失败 | 优先使用项目已配置的 `ruff check`；否则按 [review_tools.md > Ruff](references/python_dependency_installation/review_tools.md#ruff) 的 fallback 链执行，全部失败后注明「Ruff 弃用检查未执行」；「异常处理检查」维度降级为文本检索（grep / `Select-String`） |
+| 报告 `raise Xxx(...) from error` 建议，但业务上不希望暴露原始异常 | 可改用 `raise Xxx(...) from None` 显式压制异常链，或在代码中补充注释说明为有意行为；审查时该类写法会被标注为「主动压制异常链」供人工确认 |
+| `except` 内已用 `logger.exception` 记录后再 `raise`，是否仍算异常链丢失 | 若使用的是裸 `raise`（不带参数），完整保留原异常，不算问题；若 `raise` 的是新构造的异常且未带 `from`，即便已记录日志仍建议补 `from error`，否则调用方拿到的异常对象仍缺少 cause |
 | 前端项目 Node 环境不存在或版本不匹配 | 按 [frontend_dependency_installation/node_environment.md](references/frontend_dependency_installation/node_environment.md) 使用 Volta 安装/切换 Node 版本；失败后注明「Node 环境准备失败」并降级执行 |
 | 前端项目 `node_modules` 缺失导致 tsc/ESLint 大量误报 | 按 [frontend_dependency_installation/project_dependencies.md](references/frontend_dependency_installation/project_dependencies.md) 安装项目业务依赖；安装失败后在报告中注明并降级执行 |
 | 前端项目存在多个锁文件 | 按 pnpm > yarn > bun > npm 优先级选择包管理器，避免混用导致依赖不一致 |

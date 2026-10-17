@@ -93,6 +93,7 @@
    ├── 方法逻辑检查
    ├── 代码质量检查
    ├── 依赖管理检查
+   ├── 异常处理检查（Python：异常链保留、捕获范围、日志堆栈）
    └── 项目结构与目录划分检查
 
 3. 问题分类
@@ -189,7 +190,7 @@
 #### 逻辑正确性
 - **检查项**：边界条件是否处理
 - **检查项**：空值检查是否完整
-- **检查项**：异常处理是否恰当
+- **检查项**：异常处理是否恰当（Python 项目重点检查：捕获后重新抛出时是否用 `from` 保留异常链、是否静默吞异常、捕获范围是否过宽，详见 [language_checks/python_exception_handling.md](language_checks/python_exception_handling.md)）
 - **检查项**：循环是否有终止条件
 - **检查项**：方法调用是否正确（参数类型/数量、调用顺序、废弃方法）
 - **检查项**：类型转换是否安全
@@ -244,13 +245,19 @@
 
 > 详见 [language_checks/python_type_check.md](language_checks/python_type_check.md)
 
-### 7. 类型与弃用检查（TypeScript/JavaScript 项目）
+### 7. 异常处理检查（Python 项目）
+
+> 详见 [language_checks/python_exception_handling.md](language_checks/python_exception_handling.md)
+>
+> **重点检查**：`except` 块内抛出新异常时是否使用 `from` 保留异常链（如 `raise Exception(f"{error_message}")` 未加 `from error` 会丢弃原始异常的堆栈与类型信息）。
+
+### 8. 类型与弃用检查（TypeScript/JavaScript 项目）
 
 > 详见 [language_checks/typescript_javascript_check.md](language_checks/typescript_javascript_check.md)
 
 ---
 
-### 8. 配置文件检查
+### 9. 配置文件检查
 
 #### YAML/YML 文件
 - **检查项**：语法是否正确，缩进是否规范
@@ -279,7 +286,7 @@
 
 ---
 
-### 9. 项目结构与目录划分检查
+### 10. 项目结构与目录划分检查
 
 > 本维度关注项目整体目录布局是否清晰、是否符合所在框架/生态的常规实践，以及不同功能的文件是否被划分到了合理的目录中。
 > 适用于 FastAPI、Django、Next.js、React 等具有明确目录约定或推荐结构的项目。
@@ -334,6 +341,7 @@
 
 **典型问题**：
 - 异常处理不当（捕获后忽略）
+- 异常链丢失（`except` 内 `raise` 新异常未带 `from`，原始异常堆栈丢失）
 - 硬编码配置值
 - 重复代码块
 - 过长的方法或类

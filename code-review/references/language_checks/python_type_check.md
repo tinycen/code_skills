@@ -7,8 +7,8 @@
 
 ## 执行原则
 
-- **忽略范围**：执行代码扫描和类型检查时，应跳过 `.gitignore` 中指定的文件和目录（如 `__pycache__/`、`node_modules/`、`.venv/`、虚拟环境目录、构建产物等）。若使用 `find` 命令扫描，可通过 `git check-ignore` 或工具自带的忽略逻辑排除。
-- **辅助定位**：Pyright 与 Pyrefly 的诊断信息仅作为问题「线索」，不能直接等同于最终分级结果。必须结合代码上下文阅读分析后，判断是否为真实问题及其实际严重程度。
+> 通用原则（忽略范围、辅助定位）见 [common_principles.md](common_principles.md)。
+
 - **项目配置优先**：
   - 若项目已配置 `pyrightconfig.json`、`pyproject.toml` 中的 `tool.pyright`，以项目自身配置为准，执行时优先使用项目已有配置，不强制覆盖。
   - 若项目已配置 `pyrefly.toml` 或 `pyproject.toml` 中的 `tool.pyrefly`，以项目自身配置为准执行 Pyrefly 检查，不强制覆盖。
