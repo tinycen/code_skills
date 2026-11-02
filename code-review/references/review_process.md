@@ -94,6 +94,7 @@
    ├── 代码质量检查
    ├── 依赖管理检查
    ├── 异常处理检查（Python：异常链保留、捕获范围、日志堆栈）
+   ├── URL 构造检查（Python：urlencode 参数化构造、路径段转义）
    └── 项目结构与目录划分检查
 
 3. 问题分类
@@ -309,6 +310,14 @@
 
 - **检查项**：项目入口文件是否明确且位置合理
 - **检查项**：对于新接触代码的开发者，目录结构是否易于理解
+
+---
+
+### 11. URL 构造检查（Python 项目）
+
+> 详见 [language_checks/python_url_construction.md](language_checks/python_url_construction.md)
+>
+> **重点检查**：f-string / 字符串手工拼接 URL 查询串（如 `f"...?status={status}"`），参数值未经 URL 编码、`?`/`&` 手工维护易出错；应改用 `urlencode(params)` 自动转义、参数集中在 dict 中便于扩展。
 
 ---
 
